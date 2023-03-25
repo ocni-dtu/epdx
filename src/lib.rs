@@ -1,6 +1,8 @@
 pub mod ilcd;
 #[allow(dead_code)]
 mod utils;
+pub mod parse;
+pub mod epd;
 
 use wasm_bindgen::prelude::*;
 
@@ -18,6 +20,6 @@ extern "C" {
 
 #[wasm_bindgen]
 pub fn convert_ilcd(json: String) -> String {
-    let epd = ilcd::parse_ilcd(json);
+    let epd = parse::parse_ilcd(json);
     serde_json::to_string(&epd).unwrap()
 }

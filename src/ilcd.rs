@@ -1,147 +1,161 @@
-// #[derive(Debug)]
-// enum Unit {
-//     M,
-//     M2,
-//     M3,
-//     KG,
-//     Tones,
-//     PCS,
-//     L,
-//     M2R1,
-// }
-//
-// #[derive(Debug)]
-// enum Standard {
-//     EN15804A1,
-//     EN15804A2,
-// }
-//
-// #[derive(Debug)]
-// enum SubType {
-//     Generic,
-//     Specific,
-//     Industry,
-// }
-//
-// #[derive(Debug)]
-// struct ImpactCategory {
-//     a1a3: f64,
-//     a4: f64,
-//     a5: f64,
-//     b1: f64,
-//     b2: f64,
-//     b3: f64,
-//     b4: f64,
-//     b5: f64,
-//     b6: f64,
-//     b7: f64,
-//     c1: f64,
-//     c2: f64,
-//     c3: f64,
-//     c4: f64,
-//     d: f64,
-// }
-//
-// #[derive(Debug)]
-// struct Conversion {
-//     value: f64,
-//     to: String,
-// }
-
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize};
 
 
-#[derive(Debug, Serialize)]
-pub struct EPD {
-    id: String,
-    name: String,
-//     declared_unit: Unit,
-//     version: String,
-//     published_date: String,
-//     valid_until: String,
-//     format_version: String,
-//     source: String,
-//     reference_service_life: u32,
-//     standard: Standard,
-//     comment: String,
-//     location: String,
-//     subtype: SubType,
-//     conversions: Vec<Conversion>,
-//     gwp: ImpactCategory,
-//     odp: ImpactCategory,
-//     ap: ImpactCategory,
-//     ep: ImpactCategory,
-//     pocp: ImpactCategory,
-//     adpe: ImpactCategory,
-//     adpf: ImpactCategory,
-//     penre: ImpactCategory,
-//     pere: ImpactCategory,
-//     perm: ImpactCategory,
-//     pert: ImpactCategory,
-//     penrt: ImpactCategory,
-//     penrm: ImpactCategory,
-//     sm: ImpactCategory,
-//     rsf: ImpactCategory,
-//     nrsf: ImpactCategory,
-//     fw: ImpactCategory,
-//     hwd: ImpactCategory,
-//     nhed: ImpactCategory,
-//     rwd: ImpactCategory,
-//     cru: ImpactCategory,
-//     mrf: ImpactCategory,
-//     mer: ImpactCategory,
-//     eee: ImpactCategory,
-//     eet: ImpactCategory,
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ILCD {
+    pub process_information: ProcessInformation,
+    pub modelling_and_validation: ModellingAndValidation,
+    #[serde(alias = "LCIAResults")]
+    pub lcia_results: LCIAResults,
+    pub version: String
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModellingAndValidation {
+    #[serde(alias = "LCIMethodAndAllocation")]
+    pub lci_method_and_allocation: LCIMethodAndAllocation,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LCIAResults {
+    #[serde(alias = "LCIAResult")]
+    pub lci_result: Vec<LCIAResult>,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LCIAResult {
+    #[serde(alias = "referenceToLCIAMethodDataSet")]
+    pub reference_to_lcia_method_dataset: ReferenceToLCIAMethodDataSet,
+    pub other: LCIAAnies
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LCIAAnies {
+    pub anies: Vec<ModuleAnie>
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ModuleAnie {
+    pub module: Option<String>,
+    pub value: Option<AnieValue>
 }
 
 
-impl<'de> Deserialize<'de> for EPD {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
-    {
-        #[derive(Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        struct Outer {
-            process_information: ProcessInformation,
-        }
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum AnieValue {
+    ValueString(String),
+    ValueObject(ValueObject),
+}
 
-        #[derive(Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        struct ProcessInformation {
-            data_set_information: DataSetInformation,
+impl From<&AnieValue> for f64 {
+    fn from(value: &AnieValue) -> Self {
+        match value {
+            AnieValue::ValueString(s) => {
+                // Parse the string into a float
+                let float_value = s.parse::<f64>().unwrap();
+                float_value
+            },
+            AnieValue::ValueObject(_) => {
+                panic!("Cannot convert AnieValue::ValueObject to MyStruct");
+            }
         }
-
-        #[derive(Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        struct DataSetInformation {
-            #[serde(alias = "UUID")]
-            uuid: String,
-            name: DataSetName
-        }
-
-        #[derive(Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        struct DataSetName {
-            base_name: Vec<ValueLang>,
-        }
-
-        #[derive(Deserialize)]
-        struct ValueLang {
-            value: String,
-            lang: String,
-        }
-
-        let helper = Outer::deserialize(deserializer)?;
-        //let default_value = ValueLang { value: "No Name", lang: "en".to_string() };
-        Ok(EPD {
-            id: helper.process_information.data_set_information.uuid,
-            name: helper.process_information.data_set_information.name.base_name.first().unwrap().value.to_string()
-        })
     }
 }
 
-pub fn parse_ilcd(json: String) -> EPD {
-    let epd: EPD = serde_json::from_str(&json).unwrap();
-    println!("deserialized = {:?}", epd);
-    epd
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValueObject {
+    _type: String,
+    ref_object_id: String,
+    uri: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub enum ModuleValue {
+    Value(String),
+    Name(ModuleMap)
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ModuleMap {
+    name: String
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ReferenceToLCIAMethodDataSet {
+    pub short_description: Vec<ValueLang>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LCIMethodAndAllocation {
+    pub other: Anies,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Anies {
+    pub anies: Vec<Anie>
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Anie {
+    pub name: String,
+    pub value: String
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProcessInformation {
+    pub data_set_information: DataSetInformation,
+    pub time: TimeData,
+    pub geography: Geography
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Geography {
+    pub location_of_operation_supply_or_production: LocationOfOperationSupplyOrProduction
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LocationOfOperationSupplyOrProduction {
+    pub location: String
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimeData {
+    pub reference_year: i32,
+    pub data_set_valid_until: i32,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DataSetInformation {
+    #[serde(alias = "UUID")]
+    pub uuid: String,
+    pub name: DataSetName
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DataSetName {
+    pub base_name: Vec<ValueLang>,
+}
+
+#[derive(Deserialize, PartialEq, Debug)]
+pub struct ValueLang {
+    pub value: String,
+    pub lang: String
 }
