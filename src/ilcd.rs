@@ -6,6 +6,7 @@ use serde::{Deserialize};
 pub struct ILCD {
     pub process_information: ProcessInformation,
     pub modelling_and_validation: ModellingAndValidation,
+    pub exchanges: Exchanges,
     #[serde(alias = "LCIAResults")]
     pub lcia_results: LCIAResults,
     pub version: String
@@ -13,10 +14,81 @@ pub struct ILCD {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct Exchanges {
+    pub exchange: Vec<Exchange>,
+}
+
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Exchange {
+    pub reference_to_flow_data_set: ReferenceToDescription,
+    pub mean_amount: f64,
+    pub resulting_amount: Option<f64>,
+    #[serde(alias = "dataSetInternalID")]
+    pub data_set_internal_id: Option<u32>,
+    pub reference_flow: Option<bool>,
+    #[serde(alias = "resultingflowAmount")]
+    pub resulting_flow_amount: Option<f64>,
+    pub flow_properties: Option<Vec<FlowProperty>>,
+    pub material_properties: Option<Vec<MaterialProperty>>,
+
+    #[serde(alias = "exchange direction")]
+    pub exchange_direction: Option<String>,
+    pub other: Option<LCIAAnies>
+}
+
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FlowProperty {
+    pub name: Vec<ValueLang>,
+    pub uuid: String,
+    pub mean_value: f64,
+    pub reference_flow_property: Option<bool>,
+    pub reference_unit: Option<String>,
+    #[serde(alias = "unitGroupUUID")]
+    pub unit_group_uuid: Option<String>
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MaterialProperty {
+    pub name: String,
+    pub value: String,
+    pub unit: String,
+    pub unit_description: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ModellingAndValidation {
     #[serde(alias = "LCIMethodAndAllocation")]
     pub lci_method_and_allocation: LCIMethodAndAllocation,
+    pub compliance_declarations: ComplianceDeclarations
 }
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ComplianceDeclarations {
+    pub compliance: Vec<Compliance>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Compliance {
+    pub reference_to_compliance_system: ReferenceToDescription,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReferenceToDescription {
+    pub short_description: Vec<ValueLang>,
+    pub _type: String,
+    pub ref_object_id: String,
+    pub version: String
+}
+
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -63,7 +135,7 @@ impl From<&AnieValue> for f64 {
                 float_value
             },
             AnieValue::ValueObject(_) => {
-                panic!("Cannot convert AnieValue::ValueObject to MyStruct");
+                panic!("Cannot convert AnieValue::ValueObject to f64");
             }
         }
     }
@@ -154,7 +226,7 @@ pub struct DataSetName {
     pub base_name: Vec<ValueLang>,
 }
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct ValueLang {
     pub value: String,
     pub lang: String
