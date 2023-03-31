@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use ilcd2epd::*;
+    use epdx::*;
     use std::fs;
     use std::path::Path;
 

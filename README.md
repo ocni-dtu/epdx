@@ -1,69 +1,46 @@
-<div align="center">
+# EPDx
 
-  <h1><code>wasm-pack-template</code></h1>
+EPDx is a library for parsing EPD files into a common exchange format.
 
-  <strong>A template for kick starting a Rust and WebAssembly project using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
+The library is written in Rust, to allow for cross-language package distribution.
+Currently, we support Javascript/Typescript, Python and Rust.
 
-  <p>
-    <a href="https://travis-ci.org/rustwasm/wasm-pack-template"><img src="https://img.shields.io/travis/rustwasm/wasm-pack-template.svg?style=flat-square" alt="Build Status" /></a>
-  </p>
+EPDx is part of a larger project of making life cycle assessments more accessible and transparent to building
+professionals.
 
-  <h3>
-    <a href="https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html">Tutorial</a>
-    <span> | </span>
-    <a href="https://discordapp.com/channels/442252698964721669/443151097398296587">Chat</a>
-  </h3>
+Read more about our [overall goal](https://github.com/ocni-dtu/life-cycle-formats)
 
-  <sub>Built with 🦀🕸 by <a href="https://rustwasm.github.io/">The Rust and WebAssembly Working Group</a></sub>
-</div>
+# Documentation
 
-## About
+EPDx can have available packages for Javascript, Python and Rust.
 
-[**📚 Read this template tutorial! 📚**][template-docs]
+To get started head over to our [documentation](https://epdx.kongsgaard.eu).
 
-This template is designed for compiling Rust libraries into WebAssembly and
-publishing the resulting package to NPM.
+## Install NPM Package
 
-Be sure to check out [other `wasm-pack` tutorials online][tutorials] for other
-templates and usages of `wasm-pack`.
-
-[tutorials]: https://rustwasm.github.io/docs/wasm-pack/tutorials/index.html
-[template-docs]: https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html
-
-## 🚴 Usage
-
-### 🐑 Use `cargo generate` to Clone this Template
-
-[Learn more about `cargo generate` here.](https://github.com/ashleygwilliams/cargo-generate)
-
-```
-cargo generate --git https://github.com/rustwasm/wasm-pack-template.git --name my-project
-cd my-project
+```bash
+npm install epdx
 ```
 
-### 🛠️ Build with `wasm-pack build`
+## Install Python Package
 
-```
-wasm-pack build
-```
-
-### 🔬 Test in Headless Browsers with `wasm-pack test`
-
-```
-wasm-pack test --headless --firefox
+```bash
+pip install epdx
 ```
 
-### 🎁 Publish to NPM with `wasm-pack publish`
+## Install Rust Crate
 
+```bash
+cargo add epdx
 ```
-wasm-pack publish
+
+# Contribute
+
+## Install Rust
+Head over to Rust's installation [page](https://www.rust-lang.org/tools/install)
+
+## Run Tests
+
+```bash
+cargo test --package epdx --target x86_64-unknown-linux-gnu
 ```
-
-## 🔋 Batteries Included
-
-* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating
-  between WebAssembly and JavaScript.
-* [`console_error_panic_hook`](https://github.com/rustwasm/console_error_panic_hook)
-  for logging panic messages to the developer console.
-* [`wee_alloc`](https://github.com/rustwasm/wee_alloc), an allocator optimized
-  for small code size.

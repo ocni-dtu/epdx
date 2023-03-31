@@ -1,5 +1,5 @@
 [package]
-name = "ilcd2epd"
+name = "epdx"
 version = "0.1.0"
 authors = ["Christian Kongsgaard <kongsgaard.c@gmail.com>"]
 edition = "2018"
