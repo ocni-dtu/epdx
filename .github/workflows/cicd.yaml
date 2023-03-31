@@ -19,7 +19,7 @@ jobs:
 
   deployWASM:
     runs-on: ubuntu-latest
-    dependsOn: build
+    needs: build
     steps:
       - uses: actions/checkout@2
       - name: Build
