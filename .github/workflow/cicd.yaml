@@ -1,0 +1,26 @@
+name: "CI/CD"
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@2
+      - name: Build
+        run: cargo build --target x86_64-unknown-linux-gnu
+      - name: Run Tests
+        run: cargo test --package epdx --target x86_64-unknown-linux-gnu
+
+  deployWASM:
+    runs-on: ubuntu-latest
+    dependsOn: build
+    steps:
+      - uses: actions/checkout@2
+      - name: Build
+        run: wasm-pack build
