@@ -9,3 +9,4 @@ wasm-pack.log
 .vs
 .vscode
 .idea
+/site/
