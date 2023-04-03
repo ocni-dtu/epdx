@@ -13,10 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
+
       - name: Build
         run: cargo build --target x86_64-unknown-linux-gnu
 
@@ -62,10 +59,10 @@ jobs:
           python-version: "3.11"
 
       - name: Install MKdocs
-        uses: pip install mkdocs-material
+        run: pip install mkdocs-material
 
       - name: Build Docs
-        uses: mkdocs build
+        run: mkdocs build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
