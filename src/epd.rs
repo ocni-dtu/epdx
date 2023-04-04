@@ -2,20 +2,20 @@ use chrono::{DateTime, Utc};
 use chrono::prelude::*;
 use chrono::serde::ts_seconds;
 use serde::{Deserialize, Deserializer, Serialize};
-
+use schemars::{JsonSchema};
 use crate::ilcd::{ILCD, ModuleAnie};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 pub struct EPD {
     id: String,
     name: String,
     declared_unit: Unit,
     version: String,
 
-    #[serde(with = "ts_seconds")]
+    #[serde(serialize_with = "chrono::serde::ts_seconds::serialize")]
     published_date: DateTime<Utc>,
 
-    #[serde(with = "ts_seconds")]
+    #[serde(serialize_with = "chrono::serde::ts_seconds::serialize")]
     valid_until: DateTime<Utc>,
     format_version: String,
     source: Option<String>,
@@ -52,7 +52,7 @@ pub struct EPD {
     eet: Option<ImpactCategory>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 enum Unit {
     M,
     M2,
@@ -75,7 +75,7 @@ impl From<&String> for Unit {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 enum Standard {
     EN15804A1,
     EN15804A2,
@@ -92,7 +92,7 @@ impl From<&String> for Standard {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 enum SubType {
     Generic,
     Specific,
@@ -112,7 +112,7 @@ impl From<&String> for SubType {
     }
 }
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Serialize, Default, JsonSchema)]
 struct ImpactCategory {
     a1a3: Option<f64>,
     a4: Option<f64>,
@@ -173,7 +173,7 @@ impl From<&Vec<ModuleAnie>> for ImpactCategory {
 }
 
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 struct Conversion {
     value: f64,
     to: Unit,
@@ -333,3 +333,9 @@ impl<'de> Deserialize<'de> for EPD {
         })
     }
 }
+
+//
+// fn main() {
+//     let schema = schema_for!(EPD);
+//     println!("{}", serde_json::to_string_pretty(&schema).unwrap());
+// }
