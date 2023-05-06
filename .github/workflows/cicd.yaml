@@ -36,8 +36,8 @@ jobs:
     needs: buildRust
 
   deployPython:
-    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
     needs: buildRust
+    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
     secrets:
       pypi_token: ${{ secrets.PYPI_TOKEN }}
 
