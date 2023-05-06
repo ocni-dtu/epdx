@@ -26,7 +26,7 @@ jobs:
     uses: ocni-dtu/epdx/.github/workflows/rust.yaml@main
 
   deployJS:
-    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/javascript.yaml@main
     needs: buildRust
     secrets:
       npm_token: ${{ secrets.NPM_TOKEN }}
