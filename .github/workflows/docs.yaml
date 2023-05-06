@@ -25,7 +25,9 @@ jobs:
           cache: "pip"
 
       - name: Install Dependencies
-        run: maturin develop --extras doc,code-gen --target x86_64-unknown-linux-gnu
+        run: |
+          pip install maturin
+          maturin develop --extras doc,code-gen --target x86_64-unknown-linux-gnu
 
       - name: Create Pydantic Models
         run: datamodel-codegen --input docs/schemas/epdx.schema.json --input-file-type jsonschema --output packages/python/epdx/pydantic.py
