@@ -27,17 +27,17 @@ jobs:
 
   deployJS:
     uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
-    needs: build
+    needs: buildRust
     secrets:
       npm_token: ${{ secrets.NPM_TOKEN }}
 
   deployDocs:
     uses: ocni-dtu/epdx/.github/workflows/docs.yaml@main
-    needs: build
+    needs: buildRust
 
   deployPython:
     uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
-    needs: build
+    needs: buildRust
     secrets:
       pypi_token: ${{ secrets.PYPI_TOKEN }}
 
