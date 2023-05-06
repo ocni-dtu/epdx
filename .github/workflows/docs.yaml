@@ -48,7 +48,7 @@ jobs:
           path: './site'
 
       - name: Upload Pydantic Model
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: pydantic
           path: 'packages/python/epdx/pydantic.py'
