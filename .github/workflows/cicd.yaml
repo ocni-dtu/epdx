@@ -22,66 +22,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  buildRust:
+    uses: ocni-dtu/epdx/.github/workflows/rust.yaml@main
 
-      - name: Build
-        run: cargo build --target x86_64-unknown-linux-gnu
-
-      - name: Run Tests
-        run: cargo test --package epdx --target x86_64-unknown-linux-gnu
-
-  deployWASM:
-    runs-on: ubuntu-latest
+  deployJS:
+    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
     needs: build
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: jetli/wasm-pack-action@v0.4.0
-
-      - name: Build
-        run: wasm-pack build
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Publish
-        run: cd pkg && npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    secrets:
+      npm_token: ${{ secrets.NPM_TOKEN }}
 
   deployDocs:
-    runs-on: ubuntu-latest
+    uses: ocni-dtu/epdx/.github/workflows/docs.yaml@main
     needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
+  deployPython:
+    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
+    needs: build
+    secrets:
+      pypi_token: ${{ secrets.PYPI_TOKEN }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install MKdocs
-        run: pip install mkdocs-material
-
-      - name: Build Docs
-        run: mkdocs build
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: './site'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2

@@ -1,0 +1,26 @@
+on:
+  workflow_call:
+    secrets:
+      npm_token:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: jetli/wasm-pack-action@v0.4.0
+
+      - name: Build
+        run: wasm-pack build --features jsbindings
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish
+        run: cd pkg && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}

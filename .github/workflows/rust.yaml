@@ -1,0 +1,22 @@
+on:
+  workflow_call:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: cargo build --target x86_64-unknown-linux-gnu
+
+      - name: Run Tests
+        run: cargo test --package epdx --target x86_64-unknown-linux-gnu
+
+      - name: Build Export Schemas
+        run: cargo build --target x86_64-unknown-linux-gnu --bin export-schema --package epdx -r
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: schemas
+          path: target/x86_64-unknown-linux-gnu/release/export-schema

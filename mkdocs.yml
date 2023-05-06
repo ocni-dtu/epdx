@@ -6,7 +6,13 @@ theme:
   font:
     text: Roboto
 markdown_extensions:
+  - mdx_include:
+      base_path: docs
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
 repo_url: https://github.com/ocni-dtu/epdx
+nav:
+  - EPDx: index.md
+  - Usage: usage.md
+  - Schemas: schemas.md

@@ -1,0 +1,33 @@
+[project]
+name = "epdx"
+description = "EPDx is a library for parsing EPD files into a common exchange format."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Christian Kongsgaard", email = "christian@kongsgaard.eu" },
+]
+
+[project.optional-dependencies]
+doc = [
+    "mkdocs-material >=8.1.4,<9.0.0",
+    "mdx-include >=1.4.1,<2.0.0",
+]
+code-gen = [
+    "pydantic >=1.8.2,<2.0.0",
+    "datamodel-code-generator",
+]
+
+[project.urls]
+homepage = "epdx.kongsgaard.eu"
+documentation = "epdx.kongsgaard.eu"
+repository = "github.com/ocni-dtu/epdx"
+
+[build-system]
+requires = ["maturin>=0.14,<0.15"]
+build-backend = "maturin"
+
+[tool.maturin]
+# "extension-module" tells pyo3 we want to build an extension module (skips linking against libpython.so)
+features = ["pybindings"]
+python-source = "packages/python"

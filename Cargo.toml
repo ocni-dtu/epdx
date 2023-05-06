@@ -1,10 +1,14 @@
 [package]
 name = "epdx"
+description = "EPDx is a library for parsing EPD files into a common exchange format."
 version = "0.1.0"
-authors = ["Christian Kongsgaard <kongsgaard.c@gmail.com>"]
+authors = ["Christian Kongsgaard <christian@kongsgaard.eu>"]
 edition = "2018"
+readme = "README.md"
 
 [lib]
+name = "epdx"
+description = "EPDx is a library for parsing EPD files into a common exchange format."
 crate-type = ["cdylib", "rlib"]
 
 [[bin]]
@@ -15,12 +19,17 @@ bench = false
 
 
 [features]
-default = ["console_error_panic_hook"]
+default = ["wee_alloc"]
+pybindings = ["pyo3", "pyo3/extension-module",]
+jsbindings = ["wasm-bindgen", "console_error_panic_hook"]
 
 [dependencies]
-chrono ={ version = "0.4.23", features = ["serde", "rustc-serialize"] }
-wasm-bindgen = "0.2.63"
+chrono ={ version = "0.4.23", features = ["serde"] }
+wasm-bindgen = { version = "0.2.63", optional = true }
 schemars = { version = "0.8.12", features = ["chrono"] }
+serde = { version = "1.0.152", features = ["derive"] }
+serde_json = "1.0.93"
+pyo3 = {version = "0.18.3", features = ["abi3-py38"], optional = true}
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
@@ -34,8 +43,7 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 #
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = { version = "0.4.5", optional = true }
-serde = { version = "1.0.152", features = ["derive"] }
-serde_json = "1.0.93"
+
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
