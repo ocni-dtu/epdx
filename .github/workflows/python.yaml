@@ -1,7 +1,8 @@
 on:
   workflow_call:
     secrets:
-      pypi_token: ${{ secrets.PYPI_TOKEN }}
+      pypi_token:
+        required: true
 
 jobs:
   linux:
