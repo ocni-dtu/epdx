@@ -26,7 +26,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install maturin
+          pip install maturin virtualenv
+          virtualenv venv
+          source venv/bin/activate
           maturin develop --extras doc,code-gen --target x86_64-unknown-linux-gnu
 
       - name: Create Pydantic Models
