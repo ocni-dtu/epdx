@@ -9,3 +9,9 @@ mod javascript;
 
 #[cfg(feature = "pybindings")]
 mod python;
+
+#[cfg(feature = "default")]
+pub fn convert_ilcd(json: String) -> String {
+    let epd = parse::parse_ilcd(json);
+    serde_json::to_string(&epd).unwrap()
+}

@@ -14,7 +14,7 @@ extern "C" {
 
 
 #[wasm_bindgen]
-pub fn convert_ilcd(json: String) -> String {
+pub fn convertIlcd(json: String) -> String {
     let epd = parse::parse_ilcd(json);
     serde_json::to_string(&epd).unwrap()
 }

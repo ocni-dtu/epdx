@@ -24,6 +24,8 @@ concurrency:
 jobs:
   buildRust:
     uses: ocni-dtu/epdx/.github/workflows/rust.yaml@main
+    secrets:
+      cargo_token: ${{ secrets.CARGO_TOKEN }}
 
   deployJS:
     uses: ocni-dtu/epdx/.github/workflows/javascript.yaml@main
@@ -43,3 +45,10 @@ jobs:
     secrets:
       pypi_token: ${{ secrets.PYPI_TOKEN }}
 
+  createRelease:
+    uses: ocni-dtu/epdx/.github/workflows/release.yaml@main
+    needs:
+        - buildRust
+        - deployJS
+        - deployPython
+        - deployDocs

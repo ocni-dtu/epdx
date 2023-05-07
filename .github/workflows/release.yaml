@@ -1,0 +1,26 @@
+on:
+  workflow_call:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: schemas
+          path: artifacts
+
+      - name: Set Env
+        run: |
+          echo "TAG_VERSION=$(grep -o -m 1 [0-9]\.[0-9]*\.[0-9]* Cargo.toml)" >> $GITHUB_ENV
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        tag_name: ${{ env.TAG_VERSION }}
+        body: |
+          Release of ${{ env.TAG_VERSION }}
+        with:
+          files: |
+            artifacts/epdx.schema.json

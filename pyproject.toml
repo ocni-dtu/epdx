@@ -19,9 +19,9 @@ code-gen = [
 ]
 
 [project.urls]
-homepage = "epdx.kongsgaard.eu"
-documentation = "epdx.kongsgaard.eu"
-repository = "github.com/ocni-dtu/epdx"
+homepage = "https://epdx.kongsgaard.eu"
+documentation = "https://epdx.kongsgaard.eu"
+repository = "https://github.com/ocni-dtu/epdx"
 
 [build-system]
 requires = ["maturin>=0.14,<0.15"]

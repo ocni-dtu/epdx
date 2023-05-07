@@ -1,5 +1,8 @@
 on:
   workflow_call:
+    secrets:
+      cargo_token:
+        required: true
 
 jobs:
   rust:
@@ -20,3 +23,6 @@ jobs:
         with:
           name: schemas
           path: target/x86_64-unknown-linux-gnu/release/export-schema
+
+      - name: Publish Crate
+        run: cargo publish --token ${{ secrets.cargo_token }}
