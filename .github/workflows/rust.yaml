@@ -10,9 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build
-        run: cargo build --target x86_64-unknown-linux-gnu
-
       - name: Run Tests
         run: cargo test --package epdx --target x86_64-unknown-linux-gnu
 
@@ -25,4 +22,4 @@ jobs:
           path: target/x86_64-unknown-linux-gnu/release/export-schema
 
       - name: Publish Crate
-        run: cargo publish --token ${{ secrets.cargo_token }}
+        run: cargo publish --target x86_64-unknown-linux-gnu --token ${{ secrets.cargo_token }}
