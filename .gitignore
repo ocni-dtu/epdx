@@ -4,6 +4,8 @@ Cargo.lock
 bin/
 pkg/
 wasm-pack.log
+docs/schemas
+!docs/schemas/.gitkeep
 
 # IDE
 .vs

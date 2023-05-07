@@ -35,7 +35,7 @@ functional unit(s), etc.
 
 Read more about ILCD at the [European Platform on Life Cycle Assessment](https://eplca.jrc.ec.europa.eu/)
 
-# Install Packages
+## Install Packages
 
 === "JavaScript"
 

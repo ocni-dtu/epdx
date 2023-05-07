@@ -12,8 +12,11 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: schemas
-          path: docs/schemas
+          name: export-schema
+          path: artifacts
+
+      - name: Create Schema
+        run: ./artifacts/export-schema > docs/schemas/epdx.schema.json
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -51,6 +54,12 @@ jobs:
         with:
           name: pydantic
           path: 'packages/python/epdx/pydantic.py'
+
+      - name: Upload JSON Schema
+        uses: actions/upload-artifact@v3
+        with:
+          name: json-schema
+          path: 'docs/schema/epdx.schema.json'
 
       - name: Deploy to GitHub Pages
         id: deployment

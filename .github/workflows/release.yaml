@@ -12,7 +12,7 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: schemas
+          name: json-schema
           path: artifacts
 
       - name: Set Env
