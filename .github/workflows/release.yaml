@@ -18,9 +18,9 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        tag_name: ${{ env.TAG_VERSION }}
-        body: |
-          Release of ${{ env.TAG_VERSION }}
         with:
+          tag_name: ${{ env.TAG_VERSION }}
+          body: |
+            Release of ${{ env.TAG_VERSION }}
           files: |
             artifacts/epdx.schema.json
