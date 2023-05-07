@@ -48,3 +48,9 @@ Read more about ILCD at the [European Platform on Life Cycle Assessment](https:/
     ```bash
     pip install epdx
     ```
+
+=== "Rust"
+
+    ```bash
+    cargo add epdx
+    ```

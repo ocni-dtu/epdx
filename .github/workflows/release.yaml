@@ -1,6 +1,9 @@
 on:
   workflow_call:
 
+permissions:
+  contents: write
+
 jobs:
   rust:
     runs-on: ubuntu-latest
@@ -23,4 +26,4 @@ jobs:
           body: |
             Release of ${{ env.TAG_VERSION }}
           files: |
-            artifacts/epdx.schema.json
+            artifacts/*
