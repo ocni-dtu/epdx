@@ -3,6 +3,7 @@
 site_name: EPDx
 theme:
   name: material
+  custom_dir: 'docs/overrides'
   font:
     text: Roboto
 markdown_extensions:
@@ -16,3 +17,6 @@ nav:
   - EPDx: index.md
   - Usage: usage.md
   - Schemas: schemas.md
+extra:
+  analytics:
+    provider: custom
