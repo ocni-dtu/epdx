@@ -6,6 +6,9 @@ authors = ["Christian Kongsgaard <christian@kongsgaard.eu>"]
 edition = "2018"
 readme = "README.md"
 license-file = "LICENSE"
+homepage = "https://epdx.kongsgaard.eu"
+documentation = "https://epdx.kongsgaard.eu"
+repository = "https://github.com/ocni-dtu/epdx"
 
 [lib]
 name = "epdx"
