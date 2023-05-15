@@ -4,6 +4,8 @@ site_name: EPDx
 theme:
   name: material
   custom_dir: 'docs/overrides'
+  palette:
+    - scheme: chrkong
   font:
     text: Roboto
 markdown_extensions:
@@ -18,5 +20,15 @@ nav:
   - Usage: usage.md
   - Schemas: schemas.md
 extra:
+  generator: false
+  social:
+    - icon: octicons/globe-24
+      link: https://kongsgaard.eu
+      name: Christian Kongsgaard ApS
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/christian-kongsgaard/
   analytics:
     provider: custom
+extra_css:
+  - stylesheets/extra.css
+copyright: Christian Kongsgaard ApS
