@@ -1,6 +1,9 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
 
 site_name: EPDx
+site_author: Christian Kongsgaard
+site_description: EPDx is a library for parsing EPD files into a common exchange format.
+site_url: "https://epdx.kongsgaard.eu"
 theme:
   name: material
   custom_dir: 'docs/overrides'

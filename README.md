@@ -70,3 +70,24 @@ Head over to Rust's installation [page](https://www.rust-lang.org/tools/install)
 ```bash
 cargo test --package epdx --target x86_64-unknown-linux-gnu
 ```
+
+## Run Python Tests
+
+```bash
+maturin develop --extras tests --target x86_64-unknown-linux-gnu
+cd packages/python
+pytest tests/
+```
+
+## Build Documentation
+
+```bash
+maturin develop --extras doc,code-gen --target x86_64-unknown-linux-gnu
+mkdocs develop
+```
+
+## Build JS Package
+
+```bash
+wasm-pack build --features jsbindings
+```
