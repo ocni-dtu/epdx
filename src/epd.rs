@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use chrono::prelude::*;
-use chrono::serde::ts_seconds;
 use serde::{Deserialize, Deserializer, Serialize};
 use schemars::{JsonSchema};
 use crate::ilcd::{ILCD, ModuleAnie};
@@ -53,7 +52,7 @@ pub struct EPD {
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-enum Unit {
+pub enum Unit {
     M,
     M2,
     M3,
@@ -113,7 +112,7 @@ impl From<&String> for SubType {
 }
 
 #[derive(Debug, Serialize, Default, JsonSchema)]
-struct ImpactCategory {
+pub struct ImpactCategory {
     a1a3: Option<f64>,
     a4: Option<f64>,
     a5: Option<f64>,
