@@ -51,13 +51,13 @@ pub struct EPD {
     eet: Option<ImpactCategory>,
 }
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, JsonSchema)]
 pub enum Unit {
     M,
     M2,
     M3,
     KG,
-    Tones,
+    TONES,
     PCS,
     L,
     M2R1,
@@ -111,7 +111,7 @@ impl From<&String> for SubType {
     }
 }
 
-#[derive(Debug, Serialize, Default, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, Default, JsonSchema)]
 pub struct ImpactCategory {
     a1a3: Option<f64>,
     a4: Option<f64>,
