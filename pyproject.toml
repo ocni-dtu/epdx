@@ -17,6 +17,10 @@ code-gen = [
     "pydantic >=1.8.2,<2.0.0",
     "datamodel-code-generator",
 ]
+tests = [
+    'pytest',
+    "pytest-datafixtures"
+]
 
 [project.urls]
 homepage = "https://epdx.kongsgaard.eu"
