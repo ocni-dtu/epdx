@@ -12,3 +12,6 @@ docs/schemas
 .vscode
 .idea
 /site/
+
+# Python
+.venv
