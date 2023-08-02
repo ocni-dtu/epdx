@@ -2,11 +2,9 @@ on:
   workflow_call:
 
 jobs:
-  deployDocs:
+  build:
+    name: Build Python
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v3
 
@@ -14,9 +12,6 @@ jobs:
         with:
           name: json-schema
           path: docs/schemas/
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -29,7 +24,7 @@ jobs:
           pip install maturin virtualenv
           virtualenv venv
           source venv/bin/activate
-          maturin develop --extras doc,code-gen --target x86_64-unknown-linux-gnu
+          maturin develop --extras tests,code-gen --target x86_64-unknown-linux-gnu
 
       - name: Create Pydantic Models
         run: |
@@ -39,16 +34,19 @@ jobs:
             --input-file-type jsonschema \
             --output packages/python/epdx/pydantic.py
 
-      - name: Build Docs
-        run: |
-          source venv/bin/activate
-          mkdocs build
+#      - name: Check Format
+#        run: |
+#          source venv/bin/activate
+#          black --check packages/python/epdx
+#
+#      - name: Run Tests
+#        run: |
+#          source venv/bin/activate
+#          pytest packages/python/epdx/tests
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Upload Pydantic Model
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v3
         with:
-          path: './site'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          name: pydantic
+          path: 'packages/python/epdx/pydantic.py'

@@ -2,8 +2,11 @@ name: "CI/CD"
 
 on:
   push:
-    branches: [ main ]
-  # Allows you to run this workflow manually from the Actions tab
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
@@ -23,32 +26,46 @@ concurrency:
 
 jobs:
   buildRust:
-    uses: ocni-dtu/epdx/.github/workflows/rust.yaml@main
+    uses: ./.github/workflows/build_rust.yaml
+
+  releaseDocs:
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/docs.yaml
+    needs: buildRust
+
+  buildJS:
+    uses: ./.github/workflows/build_js.yaml
+    needs: buildRust
+
+  buildPython:
+    needs:
+      - buildRust
+    uses: ./.github/workflows/build_python.yaml
+
+  createRelease:
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/create_release.yaml
+    needs:
+        - buildRust
+        - buildJS
+        - buildPython
     secrets:
       cargo_token: ${{ secrets.CARGO_TOKEN }}
 
-  deployJS:
-    uses: ocni-dtu/epdx/.github/workflows/javascript.yaml@main
-    needs: buildRust
+  publishJS:
+    name: Publish NPM Package
+    uses: ./.github/workflows/publish_js.yaml
+    if: github.event_name != 'pull_request'
+    needs: createRelease
     secrets:
       npm_token: ${{ secrets.NPM_TOKEN }}
 
-  deployDocs:
-    uses: ocni-dtu/epdx/.github/workflows/docs.yaml@main
-    needs: buildRust
-
-  deployPython:
+  publishPy:
+    name: Publish PyPI Package
+    uses: ./.github/workflows/publish_python.yaml
+    if: github.event_name != 'pull_request'
     needs:
-      - buildRust
-      - deployDocs
-    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
+      - createRelease
+      - releaseDocs
     secrets:
       pypi_token: ${{ secrets.PYPI_TOKEN }}
-
-  createRelease:
-    uses: ocni-dtu/epdx/.github/workflows/release.yaml@main
-    needs:
-        - buildRust
-        - deployJS
-        - deployPython
-        - deployDocs
