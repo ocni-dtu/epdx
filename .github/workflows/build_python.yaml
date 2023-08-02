@@ -8,6 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: actions/download-artifact@v3
+        with:
+          name: json-schema
+          path: docs/schemas/
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -19,13 +24,16 @@ jobs:
           pip install maturin virtualenv
           virtualenv venv
           source venv/bin/activate
-          maturin develop --extras tests --target x86_64-unknown-linux-gnu
+          maturin develop --extras tests,code-gen --target x86_64-unknown-linux-gnu
 
-#      - uses: actions/download-artifact@v3
-#        with:
-#          name: pydantic
-#          path: packages/python/epdx
-#
+      - name: Create Pydantic Models
+        run: |
+          source venv/bin/activate
+          datamodel-codegen \
+            --input docs/schemas/epdx.schema.json \
+            --input-file-type jsonschema \
+            --output packages/python/epdx/pydantic.py
+
 #      - name: Check Format
 #        run: |
 #          source venv/bin/activate
@@ -35,3 +43,10 @@ jobs:
 #        run: |
 #          source venv/bin/activate
 #          pytest packages/python/epdx/tests
+
+      - name: Upload Pydantic Model
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v3
+        with:
+          name: pydantic
+          path: 'packages/python/epdx/pydantic.py'

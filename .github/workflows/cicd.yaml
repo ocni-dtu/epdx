@@ -29,6 +29,7 @@ jobs:
     uses: ./.github/workflows/build_rust.yaml
 
   releaseDocs:
+    if: github.event_name != 'pull_request'
     uses: ./.github/workflows/docs.yaml
     needs: buildRust
 
@@ -39,7 +40,6 @@ jobs:
   buildPython:
     needs:
       - buildRust
-      - releaseDocs
     uses: ./.github/workflows/build_python.yaml
 
   createRelease:
