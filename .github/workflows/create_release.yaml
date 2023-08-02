@@ -1,3 +1,5 @@
+name: Create Release
+
 on:
   workflow_call:
     secrets:
@@ -20,7 +22,7 @@ jobs:
           path: artifacts
 
       - name: Build Crate
-        run: cargo build --allow-dirty --target x86_64-unknown-linux-gnu --release
+        run: cargo build --target x86_64-unknown-linux-gnu --release
 
       - uses: cycjimmy/semantic-release-action@v3
         with:

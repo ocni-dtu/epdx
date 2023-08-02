@@ -1,8 +1,11 @@
+name: Build JavaScript
+
 on:
   workflow_call:
 
 jobs:
-  deploy:
+  build:
+    name: Build JavaScript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

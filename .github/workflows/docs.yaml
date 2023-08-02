@@ -1,8 +1,11 @@
+name: Publish Documentation
+
 on:
   workflow_call:
 
 jobs:
   deployDocs:
+    name: Publish Documentation
     runs-on: ubuntu-latest
     environment:
       name: github-pages

@@ -1,6 +1,7 @@
+name: Build Rust
+
 on:
   workflow_call:
-
 
 jobs:
   rust:

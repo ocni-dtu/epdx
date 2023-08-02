@@ -1,3 +1,5 @@
+name: Publish NPM Package
+
 on:
   workflow_call:
     secrets:
@@ -6,6 +8,7 @@ on:
 
 jobs:
   deploy:
+    name: Publish NPM Package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
