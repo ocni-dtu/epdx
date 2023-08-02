@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: json-schema
           path: docs/schemas/
@@ -34,7 +34,10 @@ jobs:
       - name: Create Pydantic Models
         run: |
           source venv/bin/activate
-          datamodel-codegen --input docs/schemas/epdx.schema.json --input-file-type jsonschema --output packages/python/epdx/pydantic.py
+          datamodel-codegen \
+            --input docs/schemas/epdx.schema.json \
+            --input-file-type jsonschema \
+            --output packages/python/epdx/pydantic.py
 
       - name: Build Docs
         run: |

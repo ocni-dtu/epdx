@@ -7,9 +7,6 @@ on:
 jobs:
   linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target: [x86_64]
     steps:
       - uses: actions/checkout@v3
 
@@ -21,12 +18,14 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
+          target: x86_64
           args: --release --out dist
           manylinux: auto
+
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
@@ -35,9 +34,6 @@ jobs:
 
   windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        target: [x64, x86]
     steps:
       - uses: actions/checkout@v3
 
@@ -49,12 +45,14 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          architecture: ${{ matrix.target }}
+          architecture: x64
+
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
+          target: x64
           args: --release --out dist
+
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:

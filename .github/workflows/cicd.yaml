@@ -2,8 +2,11 @@ name: "CI/CD"
 
 on:
   push:
-    branches: [ main ]
-  # Allows you to run this workflow manually from the Actions tab
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
@@ -23,32 +26,47 @@ concurrency:
 
 jobs:
   buildRust:
-    uses: ocni-dtu/epdx/.github/workflows/rust.yaml@main
-    secrets:
-      cargo_token: ${{ secrets.CARGO_TOKEN }}
+    uses: ocni-dtu/epdx/.github/workflows/build_rust.yaml@main
 
-  deployJS:
-    uses: ocni-dtu/epdx/.github/workflows/javascript.yaml@main
-    needs: buildRust
-    secrets:
-      npm_token: ${{ secrets.NPM_TOKEN }}
-
-  deployDocs:
+  releaseDocs:
+    if: github.event_name != 'pull_request'
     uses: ocni-dtu/epdx/.github/workflows/docs.yaml@main
     needs: buildRust
 
-  deployPython:
+  buildJS:
+    uses: ocni-dtu/epdx/.github/workflows/build_js.yaml@main
+    needs: buildRust
+
+  buildPython:
     needs:
       - buildRust
-      - deployDocs
-    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
-    secrets:
-      pypi_token: ${{ secrets.PYPI_TOKEN }}
+      - releaseDocs
+    uses: ocni-dtu/epdx/.github/workflows/build_python.yaml@main
 
   createRelease:
-    uses: ocni-dtu/epdx/.github/workflows/release.yaml@main
+    if: github.event_name != 'pull_request'
+    uses: ocni-dtu/epdx/.github/workflows/create_release.yaml@main
     needs:
         - buildRust
-        - deployJS
-        - deployPython
-        - deployDocs
+        - buildJS
+        - buildPython
+    secrets:
+      cargo_token: ${{ secrets.CARGO_TOKEN }}
+
+  publishJS:
+    name: Publish NPM Package
+    uses: ocni-dtu/epdx/.github/workflows/publish_js.yaml@main
+    if: github.event_name != 'pull_request'
+    needs: createRelease
+    secrets:
+      npm_token: ${{ secrets.NPM_TOKEN }}
+
+  publishPy:
+    name: Publish PyPI Package
+    uses: ocni-dtu/epdx/.github/workflows/publish_python.yaml@main
+    if: github.event_name != 'pull_request'
+    needs:
+      - createRelease
+      - releaseDocs
+    secrets:
+      pypi_token: ${{ secrets.PYPI_TOKEN }}
