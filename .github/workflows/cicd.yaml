@@ -26,26 +26,26 @@ concurrency:
 
 jobs:
   buildRust:
-    uses: ocni-dtu/epdx/.github/workflows/build_rust.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/build_rust.yaml
 
   releaseDocs:
     if: github.event_name != 'pull_request'
-    uses: ocni-dtu/epdx/.github/workflows/docs.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/docs.yaml
     needs: buildRust
 
   buildJS:
-    uses: ocni-dtu/epdx/.github/workflows/build_js.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/build_js.yaml
     needs: buildRust
 
   buildPython:
     needs:
       - buildRust
       - releaseDocs
-    uses: ocni-dtu/epdx/.github/workflows/build_python.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/build_python.yaml
 
   createRelease:
     if: github.event_name != 'pull_request'
-    uses: ocni-dtu/epdx/.github/workflows/create_release.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/create_release.yaml
     needs:
         - buildRust
         - buildJS
@@ -55,7 +55,7 @@ jobs:
 
   publishJS:
     name: Publish NPM Package
-    uses: ocni-dtu/epdx/.github/workflows/publish_js.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/publish_js.yaml
     if: github.event_name != 'pull_request'
     needs: createRelease
     secrets:
@@ -63,7 +63,7 @@ jobs:
 
   publishPy:
     name: Publish PyPI Package
-    uses: ocni-dtu/epdx/.github/workflows/publish_python.yaml@main
+    uses: ocni-dtu/epdx/.github/workflows/publish_python.yaml
     if: github.event_name != 'pull_request'
     needs:
       - createRelease
