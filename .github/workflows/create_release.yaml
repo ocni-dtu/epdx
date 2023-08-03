@@ -32,7 +32,7 @@ jobs:
       - name: Install Semantic-Release
         run: |
           npm install \
-            sematic-release \
+            semantic-release \
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
