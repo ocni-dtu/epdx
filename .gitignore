@@ -15,3 +15,8 @@ docs/schemas
 
 # Python
 .venv
+
+# JS
+node_modules
+package.json
+package-lock.json
