@@ -1,10 +1,9 @@
 name: Publish NPM Package
 
 on:
-  workflow_call:
-    secrets:
-      npm_token:
-        required: true
+  release:
+    types:
+      - created
 
 jobs:
   deploy:
@@ -26,4 +25,4 @@ jobs:
       - name: Publish
         run: cd pkg && npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

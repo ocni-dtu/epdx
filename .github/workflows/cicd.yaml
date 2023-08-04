@@ -51,21 +51,3 @@ jobs:
         - buildPython
     secrets:
       cargo_token: ${{ secrets.CARGO_TOKEN }}
-
-  publishJS:
-    name: Publish NPM Package
-    uses: ./.github/workflows/publish_js.yaml
-    if: github.event_name != 'pull_request'
-    needs: createRelease
-    secrets:
-      npm_token: ${{ secrets.NPM_TOKEN }}
-
-  publishPy:
-    name: Publish PyPI Package
-    uses: ./.github/workflows/publish_python.yaml
-    if: github.event_name != 'pull_request'
-    needs:
-      - createRelease
-      - releaseDocs
-    secrets:
-      pypi_token: ${{ secrets.PYPI_TOKEN }}
