@@ -5,6 +5,10 @@ on:
     secrets:
       cargo_token:
         required: true
+    outputs:
+      version:
+        description: "New version"
+        value: ${{ jobs.release.outputs.version }}
 
 permissions:
   contents: write
@@ -13,18 +17,37 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.nextVersion.outputs.version }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: json-schema
           path: artifacts
 
-#      - name: Build Crate
-#        run: cargo build --target x86_64-unknown-linux-gnu --release
+#      - uses: actions/download-artifact@v3
+#        with:
+#          name: rust-schema
+#          path: artifacts
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: pydantic-schema
+          path: packages/python/src/epdx
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: typescript-schema
+          path: artifacts
+
+#      - uses: actions/download-artifact@v3
+#        with:
+#          name: csharp-schema
+#          path: artifacts
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -41,8 +64,33 @@ jobs:
             semantic-release-cargo \
             conventional-changelog-conventionalcommits
 
+      - name: Set next version
+        id: nextVersion
+        run: |
+          export NEXT_VERSION=$(npx semantic-release --dry-run | grep -i 'The next release version is' | sed -E 's/.* ([[:digit:].]+)$/\1/')
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+
+      - name: Echo next version
+        run: echo "${{ steps.nextVersion.outputs.version }}"
+
       - name: Run Semantic-Release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+
+      - name: Upload Cargo
+        if: steps.nextVersion.outputs.version != ''
+        uses: actions/upload-artifact@v3
+        with:
+          name: cargo
+          path: 'Cargo*'
+
+      - name: Upload CHANGELOG
+        uses: actions/upload-artifact@v3
+        with:
+          name: changelog
+          path: 'CHANGELOG.md'

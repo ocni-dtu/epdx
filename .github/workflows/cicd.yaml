@@ -9,10 +9,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  CARGO_TERM_COLOR: always
-  NODE_VERSION: "18.x"
-
 permissions:
   contents: write
   pages: write
@@ -28,26 +24,60 @@ jobs:
   buildRust:
     uses: ./.github/workflows/build_rust.yaml
 
-  releaseDocs:
-    if: github.event_name != 'pull_request'
-    uses: ./.github/workflows/docs.yaml
-    needs: buildRust
-
-  buildJS:
-    uses: ./.github/workflows/build_js.yaml
-    needs: buildRust
-
   buildPython:
+    uses: ./.github/workflows/build_python.yaml
     needs:
       - buildRust
-    uses: ./.github/workflows/build_python.yaml
+
+  buildTypeScript:
+    uses: ./.github/workflows/build_javascript.yaml
+    needs:
+      - buildRust
+
+#  buildCSharp:
+#    uses: ./.github/workflows/build_csharp.yaml
+#    needs:
+#      - buildRust
 
   createRelease:
     if: github.event_name != 'pull_request'
     uses: ./.github/workflows/create_release.yaml
     needs:
-        - buildRust
-        - buildJS
-        - buildPython
+      - buildRust
+      - buildPython
+      - buildTypeScript
+#      - buildCSharp
     secrets:
       cargo_token: ${{ secrets.CARGO_TOKEN }}
+
+  releaseDocs:
+    if: github.event_name != 'pull_request'
+    needs:
+      - createRelease
+    uses: ./.github/workflows/release_docs.yaml
+
+  publishPython:
+    if: (github.event_name != 'pull_request') && ${{ needs.createRelease.outputs.version != '' }}
+    uses: ./.github/workflows/publish_python.yaml
+    needs:
+      - createRelease
+    secrets:
+      pypi_token: ${{ secrets.PYPI_TOKEN }}
+
+  publishJavascript:
+    if: (github.event_name != 'pull_request') && ${{ needs.createRelease.outputs.version != '' }}
+    uses: ./.github/workflows/publish_javascript.yaml
+    needs:
+      - createRelease
+    secrets:
+      npm_token: ${{ secrets.NPM_TOKEN }}
+
+#  publishCSharp:
+#    if: (github.event_name != 'pull_request') && ${{ needs.createRelease.outputs.version != '' }}
+#    uses: ./.github/workflows/publish_csharp.yaml
+#    needs:
+#      - createRelease
+#    with:
+#      version: ${{ needs.createRelease.outputs.version }}
+#    secrets:
+#      nuget_token: ${{ secrets.NUGET_TOKEN }}
