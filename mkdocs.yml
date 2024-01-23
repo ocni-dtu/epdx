@@ -20,7 +20,9 @@ markdown_extensions:
 repo_url: https://github.com/ocni-dtu/epdx
 nav:
   - EPDx: index.md
-  - Usage: usage.md
+  - Usage:
+    - Basic Usage: usage/usage.md
+    - Custom Parser: usage/custom_parser_python.md
   - Schemas: schemas.md
 extra:
   generator: false

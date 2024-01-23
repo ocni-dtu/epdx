@@ -1,0 +1,48 @@
+name: Create Release
+
+on:
+  workflow_call:
+    secrets:
+      cargo_token:
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: json-schema
+          path: artifacts
+
+#      - name: Build Crate
+#        run: cargo build --target x86_64-unknown-linux-gnu --release
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Semantic-Release
+        run: |
+          npm install \
+            semantic-release \
+            @semantic-release/changelog \
+            @semantic-release/git \
+            @semantic-release/github \
+            semantic-release-cargo \
+            conventional-changelog-conventionalcommits
+
+      - name: Run Semantic-Release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}

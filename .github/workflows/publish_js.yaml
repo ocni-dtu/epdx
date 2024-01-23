@@ -1,11 +1,13 @@
+name: Publish NPM Package
+
 on:
-  workflow_call:
-    secrets:
-      npm_token:
-        required: true
+  release:
+    types:
+      - released
 
 jobs:
   deploy:
+    name: Publish NPM Package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,4 +25,4 @@ jobs:
       - name: Publish
         run: cd pkg && npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

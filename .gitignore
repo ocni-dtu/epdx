@@ -12,4 +12,11 @@ docs/schemas
 .vscode
 .idea
 /site/
-/.venv/
+
+# Python
+.venv
+
+# JS
+node_modules
+package.json
+package-lock.json

@@ -1,11 +1,11 @@
+name: Build Rust
+
 on:
   workflow_call:
-    secrets:
-      cargo_token:
-        required: true
 
 jobs:
   rust:
+    name: Build Rust
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,6 +21,3 @@ jobs:
         with:
           name: json-schema
           path: 'epdx.schema.json'
-
-      - name: Publish Crate
-        run: cargo publish --allow-dirty --target x86_64-unknown-linux-gnu --token ${{ secrets.cargo_token }}

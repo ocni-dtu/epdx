@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use chrono::prelude::*;
 use schemars::JsonSchema;
@@ -18,7 +19,7 @@ pub struct EPD {
     #[serde(serialize_with = "chrono::serde::ts_seconds::serialize")]
     valid_until: DateTime<Utc>,
     format_version: String,
-    source: Option<String>,
+    source: Option<Source>,
     reference_service_life: Option<u32>,
     standard: Standard,
     comment: Option<String>,
@@ -50,6 +51,7 @@ pub struct EPD {
     mer: Option<ImpactCategory>,
     eee: Option<ImpactCategory>,
     eet: Option<ImpactCategory>,
+    meta_data: Option<HashMap<String, String>>
 }
 
 #[derive(Debug, Deserialize, Serialize, JsonSchema)]
@@ -74,6 +76,13 @@ impl From<&String> for Unit {
         } else { Unit::UNKNOWN }
     }
 }
+
+#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+pub struct Source {
+  name: String,
+  url: Option<String>
+}
+
 
 #[derive(Debug, Serialize, JsonSchema)]
 enum Standard {
@@ -300,6 +309,7 @@ impl<'de> Deserialize<'de> for EPD {
             conversions: Some(conversions),
             standard,
             comment: None,
+            meta_data: None,
             source: None,
             published_date: Utc.with_ymd_and_hms(helper.process_information.time.reference_year, 1, 1, 0, 0, 0).unwrap(),
             valid_until: Utc.with_ymd_and_hms(helper.process_information.time.data_set_valid_until, 1, 1, 0, 0, 0).unwrap(),

@@ -2,8 +2,11 @@ name: "CI/CD"
 
 on:
   push:
-    branches: [ main ]
-  # Allows you to run this workflow manually from the Actions tab
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
@@ -23,32 +26,28 @@ concurrency:
 
 jobs:
   buildRust:
-    uses: ocni-dtu/epdx/.github/workflows/rust.yaml@main
-    secrets:
-      cargo_token: ${{ secrets.CARGO_TOKEN }}
+    uses: ./.github/workflows/build_rust.yaml
 
-  deployJS:
-    uses: ocni-dtu/epdx/.github/workflows/javascript.yaml@main
-    needs: buildRust
-    secrets:
-      npm_token: ${{ secrets.NPM_TOKEN }}
-
-  deployDocs:
-    uses: ocni-dtu/epdx/.github/workflows/docs.yaml@main
+  releaseDocs:
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/docs.yaml
     needs: buildRust
 
-  deployPython:
+  buildJS:
+    uses: ./.github/workflows/build_js.yaml
+    needs: buildRust
+
+  buildPython:
     needs:
       - buildRust
-      - deployDocs
-    uses: ocni-dtu/epdx/.github/workflows/python.yaml@main
-    secrets:
-      pypi_token: ${{ secrets.PYPI_TOKEN }}
+    uses: ./.github/workflows/build_python.yaml
 
   createRelease:
-    uses: ocni-dtu/epdx/.github/workflows/release.yaml@main
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/create_release.yaml
     needs:
         - buildRust
-        - deployJS
-        - deployPython
-        - deployDocs
+        - buildJS
+        - buildPython
+    secrets:
+      cargo_token: ${{ secrets.CARGO_TOKEN }}
