@@ -95,7 +95,7 @@ pub struct ReferenceToDescription {
 #[serde(rename_all = "camelCase")]
 pub struct LCIAResults {
     #[serde(alias = "LCIAResult")]
-    pub lci_result: Vec<LCIAResult>,
+    pub lcia_result: Vec<LCIAResult>,
 }
 
 #[derive(Deserialize, Debug)]

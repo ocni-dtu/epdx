@@ -1,7 +1,8 @@
 use chrono::{DateTime, Utc};
 use chrono::prelude::*;
+use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
-use schemars::{JsonSchema};
+
 use crate::ilcd::{ILCD, ModuleAnie};
 
 #[derive(Debug, Serialize, JsonSchema)]
@@ -200,7 +201,7 @@ impl<'de> Deserialize<'de> for EPD {
         let mut adpe = None;
         let mut adpf = None;
 
-        for lcia_result in helper.lcia_results.lci_result.iter() {
+        for lcia_result in helper.lcia_results.lcia_result.iter() {
             if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Global warming potential (GWP)").is_some() {
                 gwp = Some(ImpactCategory::from(&lcia_result.other.anies))
             } else if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Depletion potential of the stratospheric ozone layer (ODP)").is_some() {
@@ -332,9 +333,3 @@ impl<'de> Deserialize<'de> for EPD {
         })
     }
 }
-
-//
-// fn main() {
-//     let schema = schema_for!(EPD);
-//     println!("{}", serde_json::to_string_pretty(&schema).unwrap());
-// }
