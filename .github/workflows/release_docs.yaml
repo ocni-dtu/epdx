@@ -67,5 +67,6 @@ jobs:
           path: './site'
 
       - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v2

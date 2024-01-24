@@ -80,7 +80,15 @@ jobs:
         run: echo "${{ steps.nextVersion.outputs.version }}"
 
       - name: Run Semantic-Release
+        if: github.event_name != 'pull_request'
         run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+
+      - name: Run Semantic-Release
+        if: github.event_name == 'pull_request'
+        run: npx semantic-release --dry-run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}

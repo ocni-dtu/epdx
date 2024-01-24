@@ -40,7 +40,6 @@ jobs:
 #      - buildRust
 
   createRelease:
-    if: github.event_name != 'pull_request'
     uses: ./.github/workflows/create_release.yaml
     needs:
       - buildRust
@@ -51,7 +50,6 @@ jobs:
       cargo_token: ${{ secrets.CARGO_TOKEN }}
 
   releaseDocs:
-    if: github.event_name != 'pull_request'
     needs:
       - createRelease
     uses: ./.github/workflows/release_docs.yaml
