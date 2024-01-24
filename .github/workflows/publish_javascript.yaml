@@ -1,0 +1,37 @@
+
+name: Publish NPM Package
+
+on:
+  workflow_call:
+    secrets:
+      npm_token:
+        required: true
+
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  publishJavaScript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: cargo
+
+      - uses: jetli/wasm-pack-action@v0.4.0
+
+      - name: Build
+        run: wasm-pack build --features jsbindings
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish
+        working-directory: pkg
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -9,5 +9,11 @@
 === "Python"
 
     ```python
-    {!> ../packages/python/epdx/pydantic.py!}
+    {!> schemas/pydantic.py!}
+    ```
+
+=== "TypeScript"
+
+    ```typescript
+    {!> schemas/epdx.d.ts!}
     ```

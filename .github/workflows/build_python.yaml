@@ -1,11 +1,10 @@
-name: Build Python
+name: Build Python Package
 
 on:
   workflow_call:
 
 jobs:
-  build:
-    name: Build Python
+  buildPython:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -26,29 +25,23 @@ jobs:
           pip install maturin virtualenv
           virtualenv venv
           source venv/bin/activate
-          maturin develop --extras tests,code-gen --target x86_64-unknown-linux-gnu
+          maturin develop --extras tests,codegen --target x86_64-unknown-linux-gnu
 
       - name: Create Pydantic Models
         run: |
           source venv/bin/activate
           datamodel-codegen \
-            --input docs/schemas/epdx.schema.json \
-            --input-file-type jsonschema \
-            --output packages/python/epdx/pydantic.py
+          --input docs/schemas/epdx.schema.json \
+          --input-file-type jsonschema \
+          --output packages/python/src/epdx/pydantic.py
 
-#      - name: Check Format
-#        run: |
-#          source venv/bin/activate
-#          black --check packages/python/epdx
-#
-#      - name: Run Tests
-#        run: |
-#          source venv/bin/activate
-#          pytest packages/python/epdx/tests
+      - name: Run Tests
+        run: |
+          source venv/bin/activate
+          pytest .
 
-      - name: Upload Pydantic Model
-        if: github.event_name != 'pull_request'
+      - name: Upload Pydantic Classes
         uses: actions/upload-artifact@v3
         with:
-          name: pydantic
-          path: 'packages/python/epdx/pydantic.py'
+          name: pydantic-schema
+          path: 'packages/python/src/epdx/pydantic.py'

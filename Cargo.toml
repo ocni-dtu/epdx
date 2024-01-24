@@ -25,15 +25,17 @@ bench = false
 [features]
 default = ["wee_alloc"]
 pybindings = ["pyo3", "pyo3/extension-module"]
-jsbindings = ["wasm-bindgen", "console_error_panic_hook"]
+jsbindings = ["wasm-bindgen", "serde-wasm-bindgen", "console_error_panic_hook", "tsify"]
 
 [dependencies]
-chrono ={ version = "0.4.23", features = ["serde"] }
-wasm-bindgen = { version = "0.2.63", optional = true }
-schemars = { version = "0.8.12", features = ["chrono"] }
-serde = { version = "1.0.152", features = ["derive"] }
-serde_json = "1.0.93"
-pyo3 = {version = "0.18.3", features = ["abi3-py38"], optional = true}
+chrono = { version = "0.4.31", features = ["serde"] }
+wasm-bindgen = { version = "0.2.90", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+tsify = { version = "0.4.5", optional = true }
+schemars = { version = "0.8.16", features = ["chrono"] }
+serde = { version = "1.0.195", features = ["derive"] }
+serde_json = "1.0.111"
+pyo3 = { version = "0.20.2", features = ["abi3-py310"], optional = true }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
@@ -50,7 +52,7 @@ wee_alloc = { version = "0.4.5", optional = true }
 
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.13"
+wasm-bindgen-test = "0.3.40"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

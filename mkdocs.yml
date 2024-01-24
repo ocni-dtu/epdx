@@ -24,6 +24,7 @@ nav:
     - Basic Usage: usage/usage.md
     - Custom Parser: usage/custom_parser_python.md
   - Schemas: schemas.md
+  - Changes: CHANGELOG.md
 extra:
   generator: false
   social:

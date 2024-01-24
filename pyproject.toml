@@ -13,9 +13,13 @@ doc = [
     "mkdocs-material >=8.1.4,<9.0.0",
     "mdx-include >=1.4.1,<2.0.0",
 ]
-code-gen = [
+codegen = [
     "pydantic >=1.8.2,<2.0.0",
     "datamodel-code-generator",
+]
+tests = [
+    'pytest',
+    "pytest-datafixtures"
 ]
 
 [project.urls]
@@ -30,4 +34,4 @@ build-backend = "maturin"
 [tool.maturin]
 # "extension-module" tells pyo3 we want to build an extension module (skips linking against libpython.so)
 features = ["pybindings"]
-python-source = "packages/python"
+python-source = "packages/python/src"

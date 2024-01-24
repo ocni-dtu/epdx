@@ -15,4 +15,12 @@ plugins:
   - - "@semantic-release/github"
     - assets:
         - { path: 'artifacts/epdx.schema.json', label: 'EPDx JSON Schema' }
-  - "@semantic-release/git"
+        - { path: 'packages/python/src/epdx/pydantic.py', label: 'LCAx Python Classes' }
+        - { path: 'artifacts/epdx.d.ts', label: 'EPDx TypeScript Declarations' }
+  - - "@semantic-release/git"
+    - assets:
+        - "CHANGELOG.md"
+        - "Cargo.toml"
+        - "Cargo.lock"
+        - "packages/python/src/epdx/pydantic.py"
+        - "packages/javascript/src/*"
