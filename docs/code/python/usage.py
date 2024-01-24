@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 import epdx.pydantic
 
-ilcd_file = Path(__file__).parent / "ilcd.json"
+ilcd_file = Path(__file__).parent.parent / "data" / "ilcd.json"
 
 print("EPD as dict")
 epd_dict = epdx.convert_ilcd(ilcd_file.read_text())

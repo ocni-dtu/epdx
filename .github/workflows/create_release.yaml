@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: typescript-schema
+          name: javascript-files
           path: artifacts
 
 #      - uses: actions/download-artifact@v3

@@ -6,7 +6,11 @@ use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::ilcd::{ILCD, ModuleAnie};
 
+#[cfg(feature = "jsbindings")]
+use tsify::Tsify;
+
 #[derive(Debug, Serialize, JsonSchema)]
+#[cfg_attr(feature = "jsbindings", derive(Tsify), tsify(into_wasm_abi, from_wasm_abi))]
 pub struct EPD {
     id: String,
     name: String,
@@ -51,10 +55,11 @@ pub struct EPD {
     mer: Option<ImpactCategory>,
     eee: Option<ImpactCategory>,
     eet: Option<ImpactCategory>,
-    meta_data: Option<HashMap<String, String>>
+    meta_data: Option<HashMap<String, String>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub enum Unit {
     M,
     M2,
@@ -78,13 +83,15 @@ impl From<&String> for Unit {
 }
 
 #[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct Source {
-  name: String,
-  url: Option<String>
+    name: String,
+    url: Option<String>,
 }
 
 
 #[derive(Debug, Serialize, JsonSchema)]
+#[cfg_attr(feature = "jsbindings", derive(Tsify))]
 enum Standard {
     EN15804A1,
     EN15804A2,
@@ -102,6 +109,7 @@ impl From<&String> for Standard {
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
+#[cfg_attr(feature = "jsbindings", derive(Tsify))]
 enum SubType {
     Generic,
     Specific,
@@ -122,6 +130,7 @@ impl From<&String> for SubType {
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, JsonSchema)]
+#[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct ImpactCategory {
     a1a3: Option<f64>,
     a4: Option<f64>,
@@ -183,6 +192,7 @@ impl From<&Vec<ModuleAnie>> for ImpactCategory {
 
 
 #[derive(Debug, Serialize, JsonSchema)]
+#[cfg_attr(feature = "jsbindings", derive(Tsify))]
 struct Conversion {
     value: f64,
     to: Unit,

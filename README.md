@@ -91,4 +91,5 @@ mkdocs develop
 
 ```bash
 wasm-pack build --features jsbindings
+mv pkg/epdx* packages/javascript/src
 ```

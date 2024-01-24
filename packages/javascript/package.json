@@ -1,0 +1,31 @@
+{
+  "name": "epdx",
+  "collaborators": [
+    "Christian Kongsgaard <christian@kongsgaard.eu>"
+  ],
+  "description": "EPDx is a library for parsing EPD files into a common exchange format.",
+  "version": "0.3.0",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ocni-dtu/epdx"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "files": [
+    "src"
+  ],
+  "module": "src/epdx.js",
+  "homepage": "https://epdx.kongsgaard.eu",
+  "types": "src/epdx.d.ts",
+  "sideEffects": [
+    "./epdx.js",
+    "./snippets/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.11.6",
+    "vite-plugin-wasm": "^3.3.0",
+    "vitest": "^1.2.1"
+  }
+}

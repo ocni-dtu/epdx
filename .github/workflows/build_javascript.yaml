@@ -3,6 +3,9 @@ name: Build JavaScript
 on:
   workflow_call:
 
+env:
+  NODE_VERSION: '18.x'
+
 jobs:
   build:
     name: Build JavaScript
@@ -13,4 +16,22 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.4.0
 
       - name: Build
-        run: wasm-pack build --features jsbindings
+        run: |
+          wasm-pack build --features jsbindings
+          mv pkg/epdx* packages/javascript/src
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm run test
+
+      - name: Upload Generated Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: javascript-files
+          path: 'packages/javascript/src/epdx*'

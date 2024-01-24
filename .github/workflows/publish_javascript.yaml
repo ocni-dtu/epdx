@@ -7,6 +7,9 @@ on:
       npm_token:
         required: true
 
+env:
+  NODE_VERSION: '18.x'
+
 jobs:
   publishJavaScript:
     runs-on: ubuntu-latest
@@ -22,12 +25,6 @@ jobs:
       - name: Build
         run: |
           wasm-pack build --features jsbindings
-          mv pkg/* packages/javascript
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: typescript-schema
-          path: packages/javascript
 
       - uses: actions/setup-node@v3
         with:
@@ -35,8 +32,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Publish
-        run: |
-          cd packages/javascript
-          npm publish --access public
+        working-directory: pkg
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
