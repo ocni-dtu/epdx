@@ -10,7 +10,7 @@ plugins:
   - - "semantic-release-cargo"
     - allFeatures: false
       check: true
-      publishArg: [ "--no-verify", "--target x86_64-unknown-linux-gnu" ]
+      publishArg: [ "--no-verify" ]
   - - "@semantic-release/github"
     - assets:
         - { path: 'artifacts/epdx.schema.json', label: 'EPDx JSON Schema' }
