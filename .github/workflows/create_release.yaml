@@ -13,6 +13,9 @@ on:
 permissions:
   contents: write
 
+env:
+  NODE_VERSION: '20.x'
+
 jobs:
   release:
     name: Create Release
