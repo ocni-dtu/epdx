@@ -69,6 +69,8 @@ pub enum Unit {
     PCS,
     L,
     M2R1,
+    KM,
+    TONES_KM,
     UNKNOWN,
 }
 
