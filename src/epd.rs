@@ -3,8 +3,9 @@ use chrono::{DateTime, Utc};
 use chrono::prelude::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
+use pkg_version::*;
 
-use crate::ilcd::{ILCD, ModuleAnie};
+use crate::ilcd::{Exchange, ILCD, LCIAResult, ModuleAnie};
 
 #[cfg(feature = "jsbindings")]
 use tsify::Tsify;
@@ -51,7 +52,7 @@ pub struct EPD {
     nhwd: Option<ImpactCategory>,
     rwd: Option<ImpactCategory>,
     cru: Option<ImpactCategory>,
-    mrf: Option<ImpactCategory>,
+    mfr: Option<ImpactCategory>,
     mer: Option<ImpactCategory>,
     eee: Option<ImpactCategory>,
     eet: Option<ImpactCategory>,
@@ -75,12 +76,20 @@ pub enum Unit {
 }
 
 impl From<&String> for Unit {
-    fn from(value: &String) -> Self {
-        if value.to_ascii_lowercase() == "m" {
-            Unit::M
-        } else if value.to_ascii_lowercase() == "m2" {
-            Unit::M2
-        } else { Unit::UNKNOWN }
+    fn from(unit: &String) -> Self {
+        match unit.to_ascii_lowercase().as_str() {
+            "m" => Unit::M,
+            "m2" | "m^2" | "qm" => Unit::M2,
+            "m3" | "m^3" => Unit::M3,
+            "km" => Unit::KM,
+            "kg" => Unit::KG,
+            "tones" | "tonnes" => Unit::TONES,
+            "pcs" | "stk" | "pcs." => Unit::PCS,
+            "l" => Unit::L,
+            "m2r1" => Unit::M2R1,
+            "tones*km" => Unit::TONES_KM,
+            _ => Unit::UNKNOWN
+        }
     }
 }
 
@@ -102,7 +111,7 @@ enum Standard {
 
 impl From<&String> for Standard {
     fn from(value: &String) -> Self {
-        if value.to_ascii_lowercase() == "en 15804" {
+        if value.to_ascii_lowercase().contains("15804") {
             Standard::EN15804A1
         } else if value.to_ascii_lowercase() == "en 15804+a2" {
             Standard::EN15804A2
@@ -156,38 +165,25 @@ impl From<&Vec<ModuleAnie>> for ImpactCategory {
         let mut category = ImpactCategory::default();
 
         for anie in anies {
-            if anie.module == Some(String::from("A1-A3")) {
-                category.a1a3 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("A4")) {
-                category.a4 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("A5")) {
-                category.a5 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("B1")) {
-                category.b1 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("B2")) {
-                category.b2 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("B3")) {
-                category.b3 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("B4")) {
-                category.b4 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("B5")) {
-                category.b5 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("B6")) {
-                category.b6 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("B7")) {
-                category.b7 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("C1")) {
-                category.c1 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("C2")) {
-                category.c2 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("C3")) {
-                category.c3 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("C4")) {
-                category.c4 = Some(f64::from(anie.value.as_ref().unwrap()))
-            } else if anie.module == Some(String::from("D")) {
-                category.d = Some(f64::from(anie.value.as_ref().unwrap()))
+            match (&anie.module, &anie.value) {
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("a1-a3") => category.a1a3 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("a4") => category.a4 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("a5") => category.a5 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b1") => category.b1 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b2") => category.b2 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b3") => category.b3 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b4") => category.b4 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b5") => category.b5 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b6") => category.b6 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b7") => category.b7 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c1") => category.c1 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c2") => category.c2 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c3") => category.c3 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c4") => category.c4 = Some(f64::from(value)),
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("d") => category.d = Some(f64::from(value)),
+                _ => continue
             }
-        };
+        }
         category
     }
 }
@@ -208,109 +204,12 @@ impl<'de> Deserialize<'de> for EPD {
     {
         let helper = ILCD::deserialize(deserializer)?;
         let subtype = helper.modelling_and_validation.lci_method_and_allocation.other.anies.iter().find(|&anie| anie.name == "subType").unwrap();
-        let format_version = String::from("0.1");
-        let mut standard = Standard::UNKNOWN;
-        for compliance in helper.modelling_and_validation.compliance_declarations.compliance {
-            let description = compliance.reference_to_compliance_system.short_description.iter().find(|&description| description.lang == "en").unwrap();
-            standard = Standard::from(&description.value)
-        }
+        let format_version = format!("{}.{}.{}", pkg_version_major!(), pkg_version_minor!(), pkg_version_patch!());
+        let standard = get_ilcd_standard(&helper);
 
-        let mut gwp = None;
-        let mut odp = None;
-        let mut ap = None;
-        let mut ep = None;
-        let mut pocp = None;
-        let mut adpe = None;
-        let mut adpf = None;
+        let (gwp, odp, ap, ep, pocp, adpe, adpf) = collect_from_lcia_result(&helper.lcia_results.lcia_result);
 
-        for lcia_result in helper.lcia_results.lcia_result.iter() {
-            if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Global warming potential (GWP)").is_some() {
-                gwp = Some(ImpactCategory::from(&lcia_result.other.anies))
-            } else if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Depletion potential of the stratospheric ozone layer (ODP)").is_some() {
-                odp = Some(ImpactCategory::from(&lcia_result.other.anies))
-            } else if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Acidification potential of soil and water (AP)").is_some() {
-                ap = Some(ImpactCategory::from(&lcia_result.other.anies))
-            } else if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Eutrophication potential (EP)").is_some() {
-                ep = Some(ImpactCategory::from(&lcia_result.other.anies))
-            } else if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Formation potential of tropospheric ozone (POCP)").is_some() {
-                pocp = Some(ImpactCategory::from(&lcia_result.other.anies))
-            } else if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Abiotic depletion potential for non fossil resources (ADPE)").is_some() {
-                adpe = Some(ImpactCategory::from(&lcia_result.other.anies))
-            } else if lcia_result.reference_to_lcia_method_dataset.short_description.iter().find(|&description| description.value == "Abiotic depletion potential for fossil resources (ADPF)").is_some() {
-                adpf = Some(ImpactCategory::from(&lcia_result.other.anies))
-            }
-        }
-
-        let mut declared_unit = Unit::UNKNOWN;
-        let mut conversions: Vec<Conversion> = vec![];
-        let mut pere = None;
-        let mut perm = None;
-        let mut pert = None;
-        let mut penre = None;
-        let mut penrm = None;
-        let mut penrt = None;
-        let mut sm = None;
-        let mut rsf = None;
-        let mut nrsf = None;
-        let mut fw = None;
-        let mut hwd = None;
-        let mut nhwd = None;
-        let mut rwd = None;
-        let mut cru = None;
-        let mut mrf = None;
-        let mut mer = None;
-        let mut eee = None;
-        let mut eet = None;
-
-        for exchange in helper.exchanges.exchange {
-            if exchange.reference_flow.is_some() && exchange.reference_flow.unwrap() {
-                for flow_property in exchange.flow_properties.unwrap() {
-                    if flow_property.reference_flow_property.is_some() && flow_property.reference_flow_property.unwrap() {
-                        declared_unit = Unit::from(&flow_property.reference_unit.unwrap())
-                    }
-                }
-                // TODO - Fix this conversion thing
-                for material_property in exchange.material_properties.unwrap() {
-                    conversions.push(Conversion { value: material_property.value.parse().unwrap(), to: Unit::from(&material_property.unit) })
-                }
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of renewable primary energy (PERE)").is_some() {
-                pere = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of renewable primary energy resources used as raw materials (PERM)").is_some() {
-                perm = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Total use of renewable primary energy resources (PERT)").is_some() {
-                pert = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of non renewable primary energy (PENRE)").is_some() {
-                penre = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of non renewable primary energy resources used as raw materials (PENRM)").is_some() {
-                penrm = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Total use of non renewable primary energy resource (PENRT)").is_some() {
-                penrt = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of secondary material (SM)").is_some() {
-                sm = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of renewable secondary fuels (RSF)").is_some() {
-                rsf = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of non renewable secondary fuels (NRSF)").is_some() {
-                nrsf = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Use of net fresh water (FW)").is_some() {
-                fw = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Hazardous waste disposed (HWD)").is_some() {
-                hwd = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Non hazardous waste dispose (NHWD)").is_some() {
-                nhwd = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Radioactive waste disposed (RWD)").is_some() {
-                rwd = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Components for re-use (CRU)").is_some() {
-                cru = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Materials for recycling (MFR)").is_some() {
-                mrf = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Materials for energy recovery (MER)").is_some() {
-                mer = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Exported electrical energy (EEE)").is_some() {
-                eee = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            } else if exchange.reference_to_flow_data_set.short_description.iter().find(|&description| description.value == "Exported thermal energy (EET)").is_some() {
-                eet = Some(ImpactCategory::from(&exchange.other.unwrap().anies))
-            }
-        }
+        let (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm ,rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet) = collect_from_exchanges(&helper.exchanges.exchange);
 
         Ok(EPD {
             id: helper.process_information.data_set_information.uuid,
@@ -348,11 +247,145 @@ impl<'de> Deserialize<'de> for EPD {
             nhwd,
             rwd,
             cru,
-            mrf,
+            mfr,
             mer,
             eee,
             penre,
             eet,
         })
     }
+}
+
+fn get_ilcd_standard(helper: &ILCD) -> Standard {
+    for compliance in &helper.modelling_and_validation.compliance_declarations.compliance {
+        match compliance.reference_to_compliance_system.short_description.iter().find(|&description| description.lang == "en") {
+            Some(description) => return Standard::from(&description.value),
+            _ => continue
+        }
+    }
+
+    return Standard::UNKNOWN;
+}
+
+fn get_converted_unit(unit_value: &String) -> Unit {
+    let value = unit_value.split("/").collect::<Vec<&str>>().first().unwrap().to_string();
+    Unit::from(&value)
+}
+
+fn get_ilcd_conversion(exchange: &Exchange) -> Vec<Conversion> {
+    let mut conversions: Vec<Conversion> = vec![];
+
+    match &exchange.material_properties {
+        Some(material_properties) => {
+            for material_property in material_properties {
+                let value = material_property.value.parse().unwrap_or_else(|_| 1.0);
+                conversions.push(Conversion { value, to: get_converted_unit(&material_property.unit), meta_data: serde_json::to_string(material_property).unwrap() })
+            }
+        }
+        _ => return conversions
+    }
+
+    conversions
+}
+
+fn get_ilcd_declared_unit(exchange: &Exchange) -> Unit {
+    for flow_property in exchange.flow_properties.as_ref().unwrap() {
+        match (flow_property.reference_flow_property, &flow_property.reference_unit) {
+            (Some(reference_flow), Some(reference_unit)) if reference_flow == true => return Unit::from(reference_unit),
+            _ => continue
+        }
+    }
+
+    Unit::UNKNOWN
+}
+
+fn collect_from_lcia_result(lcia_result: &Vec<LCIAResult>) -> (Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>) {
+    let mut gwp = None;
+    let mut odp = None;
+    let mut ap = None;
+    let mut ep = None;
+    let mut pocp = None;
+    let mut adpe = None;
+    let mut adpf = None;
+
+    for lcia_result in lcia_result {
+        for description in &lcia_result.reference_to_lcia_method_dataset.short_description {
+            let impact_value = Some(ImpactCategory::from(&lcia_result.other.anies));
+            match &description.value {
+                value if value.as_str() == "Global warming potential (GWP)" => gwp = impact_value,
+                value if value.as_str() == "Depletion potential of the stratospheric ozone layer (ODP)" => odp = impact_value,
+                value if value.as_str() == "Acidification potential of soil and water (AP)" => ap = impact_value,
+                value if value.as_str() == "Eutrophication potential (EP)" => ep = impact_value,
+                value if value.as_str() == "Formation potential of tropospheric ozone (POCP)" => pocp = impact_value,
+                value if value.as_str() == "Abiotic depletion potential for non fossil resources (ADPE))" => adpe = impact_value,
+                value if value.as_str() == "Abiotic depletion potential for fossil resources (ADPF)" => adpf = impact_value,
+                _ => continue
+            }
+        }
+    }
+
+    (gwp, odp, ap, ep, pocp, adpe, adpf)
+}
+
+fn collect_from_exchanges(exchanges: &Vec<Exchange>) -> (Unit, Vec<Conversion>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>) {
+    let mut declared_unit = Unit::UNKNOWN;
+    let mut conversions: Vec<Conversion> = vec![];
+    let mut pere = None;
+    let mut perm = None;
+    let mut pert = None;
+    let mut penre = None;
+    let mut penrm = None;
+    let mut penrt = None;
+    let mut sm = None;
+    let mut rsf = None;
+    let mut nrsf = None;
+    let mut fw = None;
+    let mut hwd = None;
+    let mut nhwd = None;
+    let mut rwd = None;
+    let mut cru = None;
+    let mut mfr = None;
+    let mut mer = None;
+    let mut eee = None;
+    let mut eet = None;
+
+    for exchange in exchanges {
+        match exchange.reference_flow {
+            Some(flow) if flow == true => {
+                declared_unit = get_ilcd_declared_unit(exchange);
+                conversions = get_ilcd_conversion(exchange);
+            }
+            _ => {
+                for description in &exchange.reference_to_flow_data_set.short_description {
+                    let impact_value = match &exchange.other {
+                        Some(_anies) => Some(ImpactCategory::from(&_anies.anies)),
+                        _ => continue
+                    };
+                    match &description.value {
+                        _description if _description == "Use of renewable primary energy (PERE)" => pere = impact_value,
+                        _description if _description == "Use of renewable primary energy resources used as raw materials (PERM)" => perm = impact_value,
+                        _description if _description == "Total use of renewable primary energy resources (PERT)" => pert = impact_value,
+                        _description if _description == "Use of non renewable primary energy (PENRE)" => pert = impact_value,
+                        _description if _description == "Use of non renewable primary energy resources used as raw materials (PENRM)" => penrm = impact_value,
+                        _description if _description == "Total use of non renewable primary energy resource (PENRT)" => penrt = impact_value,
+                        _description if _description == "Use of secondary material (SM)" => sm = impact_value,
+                        _description if _description == "Use of renewable secondary fuels (RSF)" => rsf = impact_value,
+                        _description if _description == "Use of non renewable secondary fuels (NRSF)" => nrsf = impact_value,
+                        _description if _description == "Use of net fresh water (FW)" => fw = impact_value,
+                        _description if _description == "Hazardous waste disposed (HWD)" => hwd = impact_value,
+                        _description if _description == "Non hazardous waste dispose (NHWD)" => nhwd = impact_value,
+                        _description if _description == "Radioactive waste disposed (RWD)" => rwd = impact_value,
+                        _description if _description == "Components for re-use (CRU)" => cru = impact_value,
+                        _description if _description == "Materials for recycling (MFR)" => mfr = impact_value,
+                        _description if _description == "Materials for energy recovery (MER)" => mer = impact_value,
+                        _description if _description == "Exported electrical energy (EEE)" => eee = impact_value,
+                        _description if _description == "Exported thermal energy (EET)" => eet = impact_value,
+                        _ => continue
+                    }
+                }
+            }
+        };
+    }
+
+    (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm ,rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet)
 }

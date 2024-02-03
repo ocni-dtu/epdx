@@ -1,5 +1,6 @@
 #[allow(dead_code)]
 use serde::{Deserialize};
+use serde::Serialize;
 
 
 #[derive(Deserialize)]
@@ -24,7 +25,7 @@ pub struct Exchanges {
 #[serde(rename_all = "camelCase")]
 pub struct Exchange {
     pub reference_to_flow_data_set: ReferenceToDescription,
-    pub mean_amount: f64,
+    pub mean_amount: Option<f64>,
     pub resulting_amount: Option<f64>,
     #[serde(alias = "dataSetInternalID")]
     pub data_set_internal_id: Option<u32>,
@@ -52,13 +53,13 @@ pub struct FlowProperty {
     pub unit_group_uuid: Option<String>
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MaterialProperty {
     pub name: String,
     pub value: String,
     pub unit: String,
-    pub unit_description: String,
+    pub unit_description: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -87,7 +88,7 @@ pub struct ReferenceToDescription {
     pub short_description: Vec<ValueLang>,
     pub _type: String,
     pub ref_object_id: String,
-    pub version: String
+    pub version: Option<String>
 }
 
 
