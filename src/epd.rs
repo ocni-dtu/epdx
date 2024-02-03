@@ -198,6 +198,7 @@ impl From<&Vec<ModuleAnie>> for ImpactCategory {
 struct Conversion {
     value: f64,
     to: Unit,
+    meta_data: String,
 }
 
 
