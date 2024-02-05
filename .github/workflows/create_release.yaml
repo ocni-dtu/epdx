@@ -24,11 +24,11 @@ jobs:
     outputs:
       version: ${{ steps.nextVersion.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: json-schema
           path: artifacts
@@ -38,12 +38,12 @@ jobs:
 #          name: rust-schema
 #          path: artifacts
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: pydantic-schema
           path: packages/python/src/epdx
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: javascript-files
           path: artifacts
@@ -54,7 +54,7 @@ jobs:
 #          path: artifacts
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -87,7 +87,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
 
-      - name: Run Semantic-Release
+      - name: Run Semantic-Release Dry Run
         if: github.event_name == 'pull_request'
         run: npx semantic-release --dry-run
         env:
@@ -96,13 +96,13 @@ jobs:
 
       - name: Upload Cargo
         if: steps.nextVersion.outputs.version != ''
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cargo
           path: 'Cargo*'
 
       - name: Upload CHANGELOG
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: changelog
           path: 'CHANGELOG.md'

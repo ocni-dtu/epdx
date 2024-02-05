@@ -8,7 +8,7 @@ jobs:
     name: Build Rust
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run Tests
         run: cargo test --package epdx --target x86_64-unknown-linux-gnu
@@ -17,7 +17,7 @@ jobs:
         run: cargo run --target x86_64-unknown-linux-gnu --bin export-schema > epdx.schema.json
 
       - name: Upload JSON Schema
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: json-schema
           path: 'epdx.schema.json'
