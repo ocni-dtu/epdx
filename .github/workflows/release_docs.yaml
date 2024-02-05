@@ -65,6 +65,7 @@ jobs:
   deployDocs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    needs: buildDocs
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
