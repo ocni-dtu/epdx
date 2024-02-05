@@ -17,7 +17,6 @@ mod tests {
 
             match parse::parse_ilcd(contents) {
                 Ok(epd) => {
-                    epd;
                     Ok(())
                 }
                 Err(error) => Err(error.to_string())
