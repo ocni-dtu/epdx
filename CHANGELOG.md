@@ -1,3 +1,16 @@
+## [1.1.0](https://github.com/ocni-dtu/epdx/compare/v1.0.0...v1.1.0) (2024-02-05)
+
+
+### Features
+
+* added km and tones_km to units ([08f6480](https://github.com/ocni-dtu/epdx/commit/08f6480464a3583db6955d21d9e2b57279c9398c))
+* added meta_data to conversion struct ([b4fa5c1](https://github.com/ocni-dtu/epdx/commit/b4fa5c1254691c1263b5048570675d300661bfd7))
+
+
+### Bug Fixes
+
+* refactored ILCD parsing functions and added more test cases for ILCD files ([35256b6](https://github.com/ocni-dtu/epdx/commit/35256b672c828283c262c5affdcc7f85f10575c1))
+
 ## 1.0.0 (2024-01-24)
 
 

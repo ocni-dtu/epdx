@@ -95,7 +95,7 @@ checksum = "545b22097d44f8a9581187cdf93de7a71e4722bf51200cfaba810865b49a495d"
 
 [[package]]
 name = "epdx"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "chrono",
  "console_error_panic_hook",
