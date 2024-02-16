@@ -8,12 +8,15 @@ if hasattr(epdx, "__all__"):
     __all__ = epdx.__all__
 
 
-def convert_ilcd(data: str, *, as_type: str = "dict"):
+def convert_ilcd(data: str | dict, *, as_type: str = "dict"):
     """
     Converts a json formatted ILCD+EPD data into EPDx
 
     The EPDx data can either be returned as a string, a dict or a Pydantic class.
     """
+
+    if isinstance(data, dict):
+        data = json.dumps(data)
 
     try:
         _epd = epdx._convert_ilcd(data)

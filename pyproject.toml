@@ -8,13 +8,16 @@ authors = [
     { name = "Christian Kongsgaard", email = "christian@kongsgaard.eu" },
 ]
 
+dependencies = [
+    "pydantic >=2.0.0"
+]
+
 [project.optional-dependencies]
 doc = [
     "mkdocs-material >=8.1.4,<9.0.0",
     "mdx-include >=1.4.1,<2.0.0",
 ]
 codegen = [
-    "pydantic >=1.8.2,<2.0.0",
     "datamodel-code-generator",
 ]
 tests = [
