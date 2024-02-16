@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/ocni-dtu/epdx/compare/v1.1.0...v1.1.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* updated pydantic version and allowing dicts as arguments to convert_ilcd ([34fdaa9](https://github.com/ocni-dtu/epdx/commit/34fdaa94cfbc09626991bbfa8b7cc4296f39447d))
+
 ## [1.1.0](https://github.com/ocni-dtu/epdx/compare/v1.0.0...v1.1.0) (2024-02-05)
 
 
