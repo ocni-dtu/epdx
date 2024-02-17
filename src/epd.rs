@@ -111,10 +111,10 @@ enum Standard {
 
 impl From<&String> for Standard {
     fn from(value: &String) -> Self {
-        if value.to_ascii_lowercase().contains("15804") {
-            Standard::EN15804A1
-        } else if value.to_ascii_lowercase() == "en 15804+a2" {
+        if value.to_ascii_lowercase().contains("15804+a2") {
             Standard::EN15804A2
+        } else if value.to_ascii_lowercase().contains("15804") {
+            Standard::EN15804A1
         } else { Standard::UNKNOWN }
     }
 }
@@ -209,7 +209,7 @@ impl<'de> Deserialize<'de> for EPD {
 
         let (gwp, odp, ap, ep, pocp, adpe, adpf) = collect_from_lcia_result(&helper.lcia_results.lcia_result);
 
-        let (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm ,rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet) = collect_from_exchanges(&helper.exchanges.exchange);
+        let (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm, rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet) = collect_from_exchanges(&helper.exchanges.exchange);
 
         Ok(EPD {
             id: helper.process_information.data_set_information.uuid,
@@ -387,5 +387,5 @@ fn collect_from_exchanges(exchanges: &Vec<Exchange>) -> (Unit, Vec<Conversion>, 
         };
     }
 
-    (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm ,rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet)
+    (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm, rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet)
 }
