@@ -1,3 +1,12 @@
+## [1.1.2](https://github.com/ocni-dtu/epdx/compare/v1.1.1...v1.1.2) (2024-02-18)
+
+
+### Bug Fixes
+
+* added generics to epdx.convert_ilcd ([538ae5e](https://github.com/ocni-dtu/epdx/commit/538ae5e981438556aa3aa936061816125f72895f))
+* fixed detection of en15804+a2 ([d0de2fe](https://github.com/ocni-dtu/epdx/commit/d0de2fea726b15102de8de36490fae6c6beff7c5))
+* fixed issues parsing EPD 023f3b97 ([7c43544](https://github.com/ocni-dtu/epdx/commit/7c43544b93ac6ccde8a2b9ab4a26d1fd5d1492e5))
+
 ## [1.1.1](https://github.com/ocni-dtu/epdx/compare/v1.1.0...v1.1.1) (2024-02-16)
 
 
