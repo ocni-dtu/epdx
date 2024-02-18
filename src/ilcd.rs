@@ -87,7 +87,7 @@ pub struct Compliance {
 pub struct ReferenceToDescription {
     pub short_description: Vec<ValueLang>,
     pub _type: String,
-    pub ref_object_id: String,
+    // pub ref_object_id: Option<String>,
     pub version: Option<String>
 }
 

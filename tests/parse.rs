@@ -16,9 +16,7 @@ mod tests {
             let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
 
             match parse::parse_ilcd(contents) {
-                Ok(epd) => {
-                    Ok(())
-                }
+                Ok(_) => Ok(()),
                 Err(error) => Err(error.to_string())
             }
         }
@@ -36,6 +34,7 @@ mod tests {
         ilcd_0b4c397d: "0b4c397d-c7a1-4ceb-9718-184334f6364e.json"
         ilcd_0e0c4e37: "0e0c4e37-b7e6-4a4f-b1c9-d36da0aa16f5.json"
         ilcd_0e9fd868: "0e9fd868-9656-489e-be6c-8251b3d43283.json"
+        ilcd_023f3b97: "023f3b97-976a-41c4-b0f1-5357b9dc5b3e.json"
     }
 
     #[test]
@@ -47,7 +46,7 @@ mod tests {
 
         match parse::parse_ilcd(contents) {
             Ok(_) => Err(String::from("Did not fail")),
-            Err(error) => Ok(())
+            Err(_) => Ok(())
         }
     }
 }
