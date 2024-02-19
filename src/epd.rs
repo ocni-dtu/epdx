@@ -96,8 +96,8 @@ impl From<&String> for Unit {
 #[derive(Debug, Deserialize, Serialize, JsonSchema)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct Source {
-    name: String,
-    url: Option<String>,
+    pub name: String,
+    pub url: Option<String>,
 }
 
 
