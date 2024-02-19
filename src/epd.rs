@@ -13,50 +13,50 @@ use tsify::Tsify;
 #[derive(Debug, Serialize, JsonSchema)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify), tsify(into_wasm_abi, from_wasm_abi))]
 pub struct EPD {
-    id: String,
-    name: String,
-    declared_unit: Unit,
-    version: String,
+    pub id: String,
+    pub name: String,
+    pub declared_unit: Unit,
+    pub version: String,
 
     #[serde(serialize_with = "chrono::serde::ts_seconds::serialize")]
-    published_date: DateTime<Utc>,
+    pub published_date: DateTime<Utc>,
 
     #[serde(serialize_with = "chrono::serde::ts_seconds::serialize")]
-    valid_until: DateTime<Utc>,
-    format_version: String,
-    source: Option<Source>,
-    reference_service_life: Option<u32>,
-    standard: Standard,
-    comment: Option<String>,
-    location: String,
-    subtype: SubType,
-    conversions: Option<Vec<Conversion>>,
-    gwp: Option<ImpactCategory>,
-    odp: Option<ImpactCategory>,
-    ap: Option<ImpactCategory>,
-    ep: Option<ImpactCategory>,
-    pocp: Option<ImpactCategory>,
-    adpe: Option<ImpactCategory>,
-    adpf: Option<ImpactCategory>,
-    penre: Option<ImpactCategory>,
-    pere: Option<ImpactCategory>,
-    perm: Option<ImpactCategory>,
-    pert: Option<ImpactCategory>,
-    penrt: Option<ImpactCategory>,
-    penrm: Option<ImpactCategory>,
-    sm: Option<ImpactCategory>,
-    rsf: Option<ImpactCategory>,
-    nrsf: Option<ImpactCategory>,
-    fw: Option<ImpactCategory>,
-    hwd: Option<ImpactCategory>,
-    nhwd: Option<ImpactCategory>,
-    rwd: Option<ImpactCategory>,
-    cru: Option<ImpactCategory>,
-    mfr: Option<ImpactCategory>,
-    mer: Option<ImpactCategory>,
-    eee: Option<ImpactCategory>,
-    eet: Option<ImpactCategory>,
-    meta_data: Option<HashMap<String, String>>,
+    pub valid_until: DateTime<Utc>,
+    pub format_version: String,
+    pub source: Option<Source>,
+    pub reference_service_life: Option<u32>,
+    pub standard: Standard,
+    pub comment: Option<String>,
+    pub location: String,
+    pub subtype: SubType,
+    pub conversions: Option<Vec<Conversion>>,
+    pub gwp: Option<ImpactCategory>,
+    pub odp: Option<ImpactCategory>,
+    pub ap: Option<ImpactCategory>,
+    pub ep: Option<ImpactCategory>,
+    pub pocp: Option<ImpactCategory>,
+    pub adpe: Option<ImpactCategory>,
+    pub adpf: Option<ImpactCategory>,
+    pub penre: Option<ImpactCategory>,
+    pub pere: Option<ImpactCategory>,
+    pub perm: Option<ImpactCategory>,
+    pub pert: Option<ImpactCategory>,
+    pub penrt: Option<ImpactCategory>,
+    pub penrm: Option<ImpactCategory>,
+    pub sm: Option<ImpactCategory>,
+    pub rsf: Option<ImpactCategory>,
+    pub nrsf: Option<ImpactCategory>,
+    pub fw: Option<ImpactCategory>,
+    pub hwd: Option<ImpactCategory>,
+    pub nhwd: Option<ImpactCategory>,
+    pub rwd: Option<ImpactCategory>,
+    pub cru: Option<ImpactCategory>,
+    pub mfr: Option<ImpactCategory>,
+    pub mer: Option<ImpactCategory>,
+    pub eee: Option<ImpactCategory>,
+    pub eet: Option<ImpactCategory>,
+    pub meta_data: Option<HashMap<String, String>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, JsonSchema)]
@@ -103,7 +103,7 @@ pub struct Source {
 
 #[derive(Debug, Serialize, JsonSchema)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
-enum Standard {
+pub enum Standard {
     EN15804A1,
     EN15804A2,
     UNKNOWN,
@@ -121,7 +121,7 @@ impl From<&String> for Standard {
 
 #[derive(Debug, Serialize, JsonSchema)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
-enum SubType {
+pub enum SubType {
     Generic,
     Specific,
     Industry,
@@ -143,21 +143,21 @@ impl From<&String> for SubType {
 #[derive(Debug, Deserialize, Serialize, Default, JsonSchema)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct ImpactCategory {
-    a1a3: Option<f64>,
-    a4: Option<f64>,
-    a5: Option<f64>,
-    b1: Option<f64>,
-    b2: Option<f64>,
-    b3: Option<f64>,
-    b4: Option<f64>,
-    b5: Option<f64>,
-    b6: Option<f64>,
-    b7: Option<f64>,
-    c1: Option<f64>,
-    c2: Option<f64>,
-    c3: Option<f64>,
-    c4: Option<f64>,
-    d: Option<f64>,
+    pub a1a3: Option<f64>,
+    pub a4: Option<f64>,
+    pub a5: Option<f64>,
+    pub b1: Option<f64>,
+    pub b2: Option<f64>,
+    pub b3: Option<f64>,
+    pub b4: Option<f64>,
+    pub b5: Option<f64>,
+    pub b6: Option<f64>,
+    pub b7: Option<f64>,
+    pub c1: Option<f64>,
+    pub c2: Option<f64>,
+    pub c3: Option<f64>,
+    pub c4: Option<f64>,
+    pub d: Option<f64>,
 }
 
 impl From<&Vec<ModuleAnie>> for ImpactCategory {
@@ -191,10 +191,10 @@ impl From<&Vec<ModuleAnie>> for ImpactCategory {
 
 #[derive(Debug, Serialize, JsonSchema)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
-struct Conversion {
-    value: f64,
-    to: Unit,
-    meta_data: String,
+pub struct Conversion {
+    pub value: f64,
+    pub to: Unit,
+    pub meta_data: String,
 }
 
 
