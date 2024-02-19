@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/ocni-dtu/epdx/compare/v1.1.3...v1.1.4) (2024-02-19)
+
+
+### Bug Fixes
+
+* made Source fields public ([b3e9c05](https://github.com/ocni-dtu/epdx/commit/b3e9c05e1cfc2dbbf66e9cf44ecde0e9e45c57a4))
+
 ## [1.1.3](https://github.com/ocni-dtu/epdx/compare/v1.1.2...v1.1.3) (2024-02-19)
 
 
