@@ -10,7 +10,7 @@ use crate::ilcd::{Exchange, ILCD, LCIAResult, ModuleAnie};
 #[cfg(feature = "jsbindings")]
 use tsify::Tsify;
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify), tsify(into_wasm_abi, from_wasm_abi))]
 pub struct EPD {
     pub id: String,
@@ -59,7 +59,54 @@ pub struct EPD {
     pub meta_data: Option<HashMap<String, String>>,
 }
 
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+impl EPD {
+    pub fn new() -> Self {
+        Self {
+            id: "".to_string(),
+            name: "".to_string(),
+            declared_unit: Unit::UNKNOWN,
+            version: "".to_string(),
+            published_date: Default::default(),
+            valid_until: Default::default(),
+            format_version: "".to_string(),
+            source: None,
+            reference_service_life: None,
+            standard: Standard::UNKNOWN,
+            comment: None,
+            location: "".to_string(),
+            subtype: SubType::Generic,
+            conversions: None,
+            gwp: None,
+            odp: None,
+            ap: None,
+            ep: None,
+            pocp: None,
+            adpe: None,
+            adpf: None,
+            penre: None,
+            pere: None,
+            perm: None,
+            pert: None,
+            penrt: None,
+            penrm: None,
+            sm: None,
+            rsf: None,
+            nrsf: None,
+            fw: None,
+            hwd: None,
+            nhwd: None,
+            rwd: None,
+            cru: None,
+            mfr: None,
+            mer: None,
+            eee: None,
+            eet: None,
+            meta_data: None,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub enum Unit {
     M,
@@ -93,7 +140,7 @@ impl From<&String> for Unit {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct Source {
     pub name: String,
@@ -101,7 +148,7 @@ pub struct Source {
 }
 
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Debug, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub enum Standard {
     EN15804A1,
@@ -119,7 +166,7 @@ impl From<&String> for Standard {
     }
 }
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Debug, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub enum SubType {
     Generic,
@@ -140,7 +187,7 @@ impl From<&String> for SubType {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, JsonSchema)]
+#[derive(Deserialize, Serialize, JsonSchema, Default, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct ImpactCategory {
     pub a1a3: Option<f64>,
@@ -158,6 +205,49 @@ pub struct ImpactCategory {
     pub c3: Option<f64>,
     pub c4: Option<f64>,
     pub d: Option<f64>,
+}
+
+impl ImpactCategory {
+    pub fn new() -> Self {
+        Self {
+            a1a3: None,
+            a4: None,
+            a5: None,
+            b1: None,
+            b2: None,
+            b3: None,
+            b4: None,
+            b5: None,
+            b6: None,
+            b7: None,
+            c1: None,
+            c2: None,
+            c3: None,
+            c4: None,
+            d: None,
+        }
+    }
+
+    pub fn add(self: &mut Self, key: &str, value: f64) {
+        match key.to_lowercase().as_str() {
+            "a1a3" => self.a1a3 = Some(value),
+            "a4" => self.a4 = Some(value),
+            "a5" => self.a5 = Some(value),
+            "b1" => self.b1 = Some(value),
+            "b2" => self.b2 = Some(value),
+            "b3" => self.b3 = Some(value),
+            "b4" => self.b4 = Some(value),
+            "b5" => self.b5 = Some(value),
+            "b6" => self.b6 = Some(value),
+            "b7" => self.b7 = Some(value),
+            "c1" => self.c1 = Some(value),
+            "c2" => self.c2 = Some(value),
+            "c3" => self.c3 = Some(value),
+            "c4" => self.c4 = Some(value),
+            "d" => self.d = Some(value),
+            _ => ()
+        }
+    }
 }
 
 impl From<&Vec<ModuleAnie>> for ImpactCategory {
@@ -189,7 +279,7 @@ impl From<&Vec<ModuleAnie>> for ImpactCategory {
 }
 
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct Conversion {
     pub value: f64,

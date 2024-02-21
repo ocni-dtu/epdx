@@ -3,6 +3,7 @@ pub mod ilcd;
 mod utils;
 pub mod parse;
 pub mod epd;
+pub mod lcabyg;
 
 #[cfg(feature = "jsbindings")]
 mod javascript;
