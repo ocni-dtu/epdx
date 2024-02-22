@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/ocni-dtu/epdx/compare/v1.1.4...v1.1.5) (2024-02-22)
+
+
+### Bug Fixes
+
+* handling non-english EPDs ([87fe672](https://github.com/ocni-dtu/epdx/commit/87fe67207d712c53726314d772cf183b9206f897))
+
 ## [1.1.4](https://github.com/ocni-dtu/epdx/compare/v1.1.3...v1.1.4) (2024-02-19)
 
 
