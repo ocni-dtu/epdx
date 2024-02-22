@@ -3,6 +3,7 @@ mod tests {
     use epdx::*;
     use std::fs;
     use std::path::Path;
+    use epdx::epd::{Standard, SubType};
 
     macro_rules! parse_ilcd_tests {
     ($($name:ident: $value:expr)*) => {
@@ -12,11 +13,25 @@ mod tests {
             let input = $value;
 
             let root_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-            let file_path = root_dir.join("tests/datafixtures/").join(input);
+            let file_path = root_dir.join("tests/datafixtures/ilcd").join(input);
             let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
 
             match parse::parse_ilcd(contents) {
-                Ok(_) => Ok(()),
+                Ok(epd) => {
+                    // Assert EPD Info
+                    assert!(!epd.id.is_empty());
+                    assert!(!epd.name.is_empty());
+                    assert!(!matches!(epd.standard, Standard::UNKNOWN));
+
+                    // Assert Impact Category Values
+                    assert!(epd.gwp.is_some());
+                    assert!(epd.odp.is_some());
+                    assert!(epd.ap.is_some());
+                    assert!(epd.pocp.is_some());
+                    assert!(epd.adpe.is_some());
+                    assert!(epd.adpf.is_some());
+                    Ok(())
+                }
                 Err(error) => Err(error.to_string())
             }
         }
@@ -35,12 +50,13 @@ mod tests {
         ilcd_0e0c4e37: "0e0c4e37-b7e6-4a4f-b1c9-d36da0aa16f5.json"
         ilcd_0e9fd868: "0e9fd868-9656-489e-be6c-8251b3d43283.json"
         ilcd_023f3b97: "023f3b97-976a-41c4-b0f1-5357b9dc5b3e.json"
+        ilcd_c23b2987: "c23b2987-776d-4d55-91c7-5f2a0f2c50f1.json"
     }
 
     #[test]
     fn test_parse_ilcd_short() -> Result<(), String> {
         let root_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-        let file_path = root_dir.join("tests/datafixtures/f63ac879_test.json");
+        let file_path = root_dir.join("tests/datafixtures/ilcd/f63ac879_test.json");
         let contents =
             fs::read_to_string(file_path).expect("Should have been able to read the file");
 
