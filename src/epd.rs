@@ -258,9 +258,12 @@ impl<'de> Deserialize<'de> for EPD {
 
 fn get_ilcd_standard(helper: &ILCD) -> Standard {
     for compliance in &helper.modelling_and_validation.compliance_declarations.compliance {
-        match compliance.reference_to_compliance_system.short_description.iter().find(|&description| description.lang == "en") {
-            Some(description) => return Standard::from(&description.value),
-            _ => continue
+        for description in &compliance.reference_to_compliance_system.short_description {
+            match Standard::from(&description.value) {
+                Standard::UNKNOWN => continue,
+                standard => return standard
+            }
+
         }
     }
 
@@ -312,13 +315,13 @@ fn collect_from_lcia_result(lcia_result: &Vec<LCIAResult>) -> (Option<ImpactCate
         for description in &lcia_result.reference_to_lcia_method_dataset.short_description {
             let impact_value = Some(ImpactCategory::from(&lcia_result.other.anies));
             match &description.value {
-                value if value.as_str() == "Global warming potential (GWP)" => gwp = impact_value,
-                value if value.as_str() == "Depletion potential of the stratospheric ozone layer (ODP)" => odp = impact_value,
-                value if value.as_str() == "Acidification potential of soil and water (AP)" => ap = impact_value,
-                value if value.as_str() == "Eutrophication potential (EP)" => ep = impact_value,
-                value if value.as_str() == "Formation potential of tropospheric ozone (POCP)" => pocp = impact_value,
-                value if value.as_str() == "Abiotic depletion potential for non fossil resources (ADPE))" => adpe = impact_value,
-                value if value.as_str() == "Abiotic depletion potential for fossil resources (ADPF)" => adpf = impact_value,
+                value if value.contains("(GWP)") || value.contains("(GWP-total)")  => gwp = impact_value,
+                value if value.contains("(ODP)") => odp = impact_value,
+                value if value.contains("(AP)") => ap = impact_value,
+                value if value.contains("(EP)") => ep = impact_value,
+                value if value.contains("(POCP)") => pocp = impact_value,
+                value if value.contains("(ADPE)") => adpe = impact_value,
+                value if value.contains("(ADPF)") => adpf = impact_value,
                 _ => continue
             }
         }
