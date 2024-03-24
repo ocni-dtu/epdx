@@ -1,19 +1,17 @@
 use serde::{Deserialize, Serialize};
 
-use crate::epd::{Conversion, EPD, ImpactCategory, Source, Standard, SubType, Unit};
+use crate::epd::{Conversion, ImpactCategory, Source, Standard, SubType, Unit, EPD};
 use crate::utils::get_version;
-
 
 #[derive(Deserialize, Serialize)]
 pub enum Nodes {
     Node(Node),
 }
 
-
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub enum Node {
-    Stage(Stage)
+    Stage(Stage),
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -76,7 +74,11 @@ impl From<&Vec<Stage>> for EPD {
         let mut penr = ImpactCategory::new();
 
         for stage in stages {
-            let stage_name = if stage.stage == "A1to3" { "A1A3" } else { &stage.stage };
+            let stage_name = if stage.stage == "A1to3" {
+                "A1A3"
+            } else {
+                &stage.stage
+            };
 
             ep.add(stage_name, stage.indicators.ep);
             odp.add(stage_name, stage.indicators.odp);
@@ -134,9 +136,11 @@ impl From<&Vec<Stage>> for EPD {
             format_version: get_version(),
             reference_service_life: None,
             location: "".to_string(),
-            conversions: Some(vec![
-                Conversion { to: Unit::KG, value: node.mass_factor, meta_data: "".to_string() }
-            ]),
+            conversions: Some(vec![Conversion {
+                to: Unit::KG,
+                value: node.mass_factor,
+                meta_data: "".to_string(),
+            }]),
             perm: None,
             meta_data: None,
         };

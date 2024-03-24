@@ -1,8 +1,10 @@
 #[cfg(test)]
 mod tests {
-    use epdx::*;
     use std::fs;
     use std::path::Path;
+
+    use epdx::*;
+    use epdx::epd::Standard;
 
     macro_rules! parse_lcabyg_tests {
     ($($name:ident: $value:expr)*) => {
@@ -23,7 +25,20 @@ mod tests {
                 }
 
             };
-            epd::EPD::from(&stages);
+            let _epd = epd::EPD::from(&stages);
+
+            // Assert EPD Info
+            assert!(!_epd.id.is_empty());
+            assert!(!_epd.name.is_empty());
+            assert!(!matches!(_epd.standard, Standard::UNKNOWN));
+
+            // Assert Impact Category Values
+            assert!(_epd.gwp.is_some());
+            assert!(_epd.odp.is_some());
+            assert!(_epd.ap.is_some());
+            assert!(_epd.pocp.is_some());
+            assert!(_epd.adpe.is_some());
+            assert!(_epd.adpf.is_some());
             Ok(())
         }
     )*

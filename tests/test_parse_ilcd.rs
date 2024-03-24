@@ -1,9 +1,10 @@
 #[cfg(test)]
 mod tests {
-    use epdx::*;
     use std::fs;
     use std::path::Path;
-    use epdx::epd::{Standard, SubType};
+
+    use epdx::*;
+    use epdx::epd::Standard;
 
     macro_rules! parse_ilcd_tests {
     ($($name:ident: $value:expr)*) => {

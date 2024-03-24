@@ -1,7 +1,6 @@
-use wasm_bindgen::prelude::*;
 use crate::epd::EPD;
 use crate::parse;
-
+use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -20,7 +19,6 @@ pub fn convertIlcd(json: String) -> Result<EPD, JsError> {
     let epd = parse::parse_ilcd(json);
     match epd {
         Ok(epd) => Ok(epd),
-        Err(error) => Err(JsError::new(error.to_string().as_str()))
+        Err(error) => Err(JsError::new(error.to_string().as_str())),
     }
 }
-

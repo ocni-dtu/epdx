@@ -1,7 +1,6 @@
 #[allow(dead_code)]
-use serde::{Deserialize};
+use serde::Deserialize;
 use serde::Serialize;
-
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -11,7 +10,7 @@ pub struct ILCD {
     pub exchanges: Exchanges,
     #[serde(alias = "LCIAResults")]
     pub lcia_results: LCIAResults,
-    pub version: String
+    pub version: String,
 }
 
 #[derive(Deserialize)]
@@ -19,7 +18,6 @@ pub struct ILCD {
 pub struct Exchanges {
     pub exchange: Vec<Exchange>,
 }
-
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -37,9 +35,8 @@ pub struct Exchange {
 
     #[serde(alias = "exchange direction")]
     pub exchange_direction: Option<String>,
-    pub other: Option<LCIAAnies>
+    pub other: Option<LCIAAnies>,
 }
-
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -50,7 +47,7 @@ pub struct FlowProperty {
     pub reference_flow_property: Option<bool>,
     pub reference_unit: Option<String>,
     #[serde(alias = "unitGroupUUID")]
-    pub unit_group_uuid: Option<String>
+    pub unit_group_uuid: Option<String>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -67,7 +64,7 @@ pub struct MaterialProperty {
 pub struct ModellingAndValidation {
     #[serde(alias = "LCIMethodAndAllocation")]
     pub lci_method_and_allocation: LCIMethodAndAllocation,
-    pub compliance_declarations: ComplianceDeclarations
+    pub compliance_declarations: ComplianceDeclarations,
 }
 
 #[derive(Deserialize)]
@@ -88,9 +85,8 @@ pub struct ReferenceToDescription {
     pub short_description: Vec<ValueLang>,
     pub _type: String,
     // pub ref_object_id: Option<String>,
-    pub version: Option<String>
+    pub version: Option<String>,
 }
-
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -104,22 +100,21 @@ pub struct LCIAResults {
 pub struct LCIAResult {
     #[serde(alias = "referenceToLCIAMethodDataSet")]
     pub reference_to_lcia_method_dataset: ReferenceToLCIAMethodDataSet,
-    pub other: LCIAAnies
+    pub other: LCIAAnies,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LCIAAnies {
-    pub anies: Vec<ModuleAnie>
+    pub anies: Vec<ModuleAnie>,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ModuleAnie {
     pub module: Option<String>,
-    pub value: Option<AnieValue>
+    pub value: Option<AnieValue>,
 }
-
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
@@ -135,7 +130,7 @@ impl From<&AnieValue> for f64 {
                 // Parse the string into a float
                 let float_value = s.parse::<f64>().unwrap();
                 float_value
-            },
+            }
             AnieValue::ValueObject(_) => {
                 panic!("Cannot convert AnieValue::ValueObject to f64");
             }
@@ -154,12 +149,12 @@ pub struct ValueObject {
 #[derive(Deserialize, Debug)]
 pub enum ModuleValue {
     Value(String),
-    Name(ModuleMap)
+    Name(ModuleMap),
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ModuleMap {
-    name: String
+    name: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -177,14 +172,14 @@ pub struct LCIMethodAndAllocation {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Anies {
-    pub anies: Vec<Anie>
+    pub anies: Vec<Anie>,
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Anie {
     pub name: String,
-    pub value: String
+    pub value: String,
 }
 
 #[derive(Deserialize)]
@@ -192,19 +187,19 @@ pub struct Anie {
 pub struct ProcessInformation {
     pub data_set_information: DataSetInformation,
     pub time: TimeData,
-    pub geography: Geography
+    pub geography: Geography,
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Geography {
-    pub location_of_operation_supply_or_production: LocationOfOperationSupplyOrProduction
+    pub location_of_operation_supply_or_production: LocationOfOperationSupplyOrProduction,
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LocationOfOperationSupplyOrProduction {
-    pub location: String
+    pub location: String,
 }
 
 #[derive(Deserialize)]
@@ -219,7 +214,7 @@ pub struct TimeData {
 pub struct DataSetInformation {
     #[serde(alias = "UUID")]
     pub uuid: String,
-    pub name: DataSetName
+    pub name: DataSetName,
 }
 
 #[derive(Deserialize)]
@@ -231,5 +226,5 @@ pub struct DataSetName {
 #[derive(Deserialize, Debug)]
 pub struct ValueLang {
     pub value: String,
-    pub lang: String
+    pub lang: String,
 }
