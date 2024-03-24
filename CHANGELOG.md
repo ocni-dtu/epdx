@@ -1,3 +1,16 @@
+## [1.2.0](https://github.com/ocni-dtu/epdx/compare/v1.1.5...v1.2.0) (2024-03-24)
+
+
+### Features
+
+* added functionality for LCAbyg data ([0ac8276](https://github.com/ocni-dtu/epdx/commit/0ac82760bb10992be92c70654a14b8efb9e3e904))
+* added functionality to parse LCAbyg EPDs (LCAByg stages) ([b2184ba](https://github.com/ocni-dtu/epdx/commit/b2184bae7aae4e7724ec46ead02b9c15c989fe42))
+
+
+### Bug Fixes
+
+* bug fix in as_type error handling ([4334de6](https://github.com/ocni-dtu/epdx/commit/4334de6232c2b005ee5f9c8dae52447ecc54a73e))
+
 ## [1.1.5](https://github.com/ocni-dtu/epdx/compare/v1.1.4...v1.1.5) (2024-02-22)
 
 
