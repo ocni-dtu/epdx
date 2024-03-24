@@ -1,17 +1,21 @@
-use std::collections::HashMap;
-use chrono::{DateTime, Utc};
 use chrono::prelude::*;
+use chrono::{DateTime, Utc};
+use pkg_version::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
-use pkg_version::*;
+use std::collections::HashMap;
 
-use crate::ilcd::{Exchange, ILCD, LCIAResult, ModuleAnie};
+use crate::ilcd::{Exchange, LCIAResult, ModuleAnie, ILCD};
 
 #[cfg(feature = "jsbindings")]
 use tsify::Tsify;
 
-#[derive(Debug, Serialize, JsonSchema)]
-#[cfg_attr(feature = "jsbindings", derive(Tsify), tsify(into_wasm_abi, from_wasm_abi))]
+#[derive(Serialize, JsonSchema, Clone)]
+#[cfg_attr(
+    feature = "jsbindings",
+    derive(Tsify),
+    tsify(into_wasm_abi, from_wasm_abi)
+)]
 pub struct EPD {
     pub id: String,
     pub name: String,
@@ -59,7 +63,54 @@ pub struct EPD {
     pub meta_data: Option<HashMap<String, String>>,
 }
 
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+impl EPD {
+    pub fn new() -> Self {
+        Self {
+            id: "".to_string(),
+            name: "".to_string(),
+            declared_unit: Unit::UNKNOWN,
+            version: "".to_string(),
+            published_date: Default::default(),
+            valid_until: Default::default(),
+            format_version: "".to_string(),
+            source: None,
+            reference_service_life: None,
+            standard: Standard::UNKNOWN,
+            comment: None,
+            location: "".to_string(),
+            subtype: SubType::Generic,
+            conversions: None,
+            gwp: None,
+            odp: None,
+            ap: None,
+            ep: None,
+            pocp: None,
+            adpe: None,
+            adpf: None,
+            penre: None,
+            pere: None,
+            perm: None,
+            pert: None,
+            penrt: None,
+            penrm: None,
+            sm: None,
+            rsf: None,
+            nrsf: None,
+            fw: None,
+            hwd: None,
+            nhwd: None,
+            rwd: None,
+            cru: None,
+            mfr: None,
+            mer: None,
+            eee: None,
+            eet: None,
+            meta_data: None,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub enum Unit {
     M,
@@ -88,20 +139,19 @@ impl From<&String> for Unit {
             "l" => Unit::L,
             "m2r1" => Unit::M2R1,
             "tones*km" => Unit::TONES_KM,
-            _ => Unit::UNKNOWN
+            _ => Unit::UNKNOWN,
         }
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct Source {
     pub name: String,
     pub url: Option<String>,
 }
 
-
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Debug, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub enum Standard {
     EN15804A1,
@@ -115,11 +165,13 @@ impl From<&String> for Standard {
             Standard::EN15804A2
         } else if value.to_ascii_lowercase().contains("15804") {
             Standard::EN15804A1
-        } else { Standard::UNKNOWN }
+        } else {
+            Standard::UNKNOWN
+        }
     }
 }
 
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Debug, Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub enum SubType {
     Generic,
@@ -136,11 +188,13 @@ impl From<&String> for SubType {
             SubType::Specific
         } else if value.to_ascii_lowercase().contains("industry") {
             SubType::Industry
-        } else { SubType::Generic }
+        } else {
+            SubType::Generic
+        }
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, JsonSchema)]
+#[derive(Deserialize, Serialize, JsonSchema, Default, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct ImpactCategory {
     pub a1a3: Option<f64>,
@@ -160,36 +214,108 @@ pub struct ImpactCategory {
     pub d: Option<f64>,
 }
 
+impl ImpactCategory {
+    pub fn new() -> Self {
+        Self {
+            a1a3: None,
+            a4: None,
+            a5: None,
+            b1: None,
+            b2: None,
+            b3: None,
+            b4: None,
+            b5: None,
+            b6: None,
+            b7: None,
+            c1: None,
+            c2: None,
+            c3: None,
+            c4: None,
+            d: None,
+        }
+    }
+
+    pub fn add(self: &mut Self, key: &str, value: f64) {
+        match key.to_lowercase().as_str() {
+            "a1a3" => self.a1a3 = Some(value),
+            "a4" => self.a4 = Some(value),
+            "a5" => self.a5 = Some(value),
+            "b1" => self.b1 = Some(value),
+            "b2" => self.b2 = Some(value),
+            "b3" => self.b3 = Some(value),
+            "b4" => self.b4 = Some(value),
+            "b5" => self.b5 = Some(value),
+            "b6" => self.b6 = Some(value),
+            "b7" => self.b7 = Some(value),
+            "c1" => self.c1 = Some(value),
+            "c2" => self.c2 = Some(value),
+            "c3" => self.c3 = Some(value),
+            "c4" => self.c4 = Some(value),
+            "d" => self.d = Some(value),
+            _ => (),
+        }
+    }
+}
+
 impl From<&Vec<ModuleAnie>> for ImpactCategory {
     fn from(anies: &Vec<ModuleAnie>) -> Self {
         let mut category = ImpactCategory::default();
 
         for anie in anies {
             match (&anie.module, &anie.value) {
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("a1-a3") => category.a1a3 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("a4") => category.a4 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("a5") => category.a5 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("b1") => category.b1 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("b2") => category.b2 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("b3") => category.b3 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("b4") => category.b4 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("b5") => category.b5 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("b6") => category.b6 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("b7") => category.b7 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("c1") => category.c1 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("c2") => category.c2 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("c3") => category.c3 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("c4") => category.c4 = Some(f64::from(value)),
-                (Some(module), Some(value)) if module.to_lowercase() == String::from("d") => category.d = Some(f64::from(value)),
-                _ => continue
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("a1-a3") => {
+                    category.a1a3 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("a4") => {
+                    category.a4 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("a5") => {
+                    category.a5 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b1") => {
+                    category.b1 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b2") => {
+                    category.b2 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b3") => {
+                    category.b3 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b4") => {
+                    category.b4 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b5") => {
+                    category.b5 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b6") => {
+                    category.b6 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("b7") => {
+                    category.b7 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c1") => {
+                    category.c1 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c2") => {
+                    category.c2 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c3") => {
+                    category.c3 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("c4") => {
+                    category.c4 = Some(f64::from(value))
+                }
+                (Some(module), Some(value)) if module.to_lowercase() == String::from("d") => {
+                    category.d = Some(f64::from(value))
+                }
+                _ => continue,
             }
         }
         category
     }
 }
 
-
-#[derive(Debug, Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, Clone)]
 #[cfg_attr(feature = "jsbindings", derive(Tsify))]
 pub struct Conversion {
     pub value: f64,
@@ -197,23 +323,65 @@ pub struct Conversion {
     pub meta_data: String,
 }
 
-
 impl<'de> Deserialize<'de> for EPD {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
+    where
+        D: Deserializer<'de>,
     {
         let helper = ILCD::deserialize(deserializer)?;
-        let subtype = helper.modelling_and_validation.lci_method_and_allocation.other.anies.iter().find(|&anie| anie.name == "subType").unwrap();
-        let format_version = format!("{}.{}.{}", pkg_version_major!(), pkg_version_minor!(), pkg_version_patch!());
+        let subtype = helper
+            .modelling_and_validation
+            .lci_method_and_allocation
+            .other
+            .anies
+            .iter()
+            .find(|&anie| anie.name == "subType")
+            .unwrap();
+        let format_version = format!(
+            "{}.{}.{}",
+            pkg_version_major!(),
+            pkg_version_minor!(),
+            pkg_version_patch!()
+        );
         let standard = get_ilcd_standard(&helper);
 
-        let (gwp, odp, ap, ep, pocp, adpe, adpf) = collect_from_lcia_result(&helper.lcia_results.lcia_result);
+        let (gwp, odp, ap, ep, pocp, adpe, adpf) =
+            collect_from_lcia_result(&helper.lcia_results.lcia_result);
 
-        let (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm, rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet) = collect_from_exchanges(&helper.exchanges.exchange);
+        let (
+            declared_unit,
+            conversions,
+            pere,
+            perm,
+            pert,
+            penre,
+            penrm,
+            penrt,
+            sm,
+            rsf,
+            nrsf,
+            fw,
+            hwd,
+            nhwd,
+            rwd,
+            cru,
+            mfr,
+            mer,
+            eee,
+            eet,
+        ) = collect_from_exchanges(&helper.exchanges.exchange);
 
         Ok(EPD {
             id: helper.process_information.data_set_information.uuid,
-            name: helper.process_information.data_set_information.name.base_name.first().unwrap().value.to_string(),
+            name: helper
+                .process_information
+                .data_set_information
+                .name
+                .base_name
+                .first()
+                .unwrap()
+                .value
+                .to_string(),
             version: helper.version,
             format_version,
             declared_unit,
@@ -223,9 +391,31 @@ impl<'de> Deserialize<'de> for EPD {
             comment: None,
             meta_data: None,
             source: None,
-            published_date: Utc.with_ymd_and_hms(helper.process_information.time.reference_year, 1, 1, 0, 0, 0).unwrap(),
-            valid_until: Utc.with_ymd_and_hms(helper.process_information.time.data_set_valid_until, 1, 1, 0, 0, 0).unwrap(),
-            location: helper.process_information.geography.location_of_operation_supply_or_production.location,
+            published_date: Utc
+                .with_ymd_and_hms(
+                    helper.process_information.time.reference_year,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                )
+                .unwrap(),
+            valid_until: Utc
+                .with_ymd_and_hms(
+                    helper.process_information.time.data_set_valid_until,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                )
+                .unwrap(),
+            location: helper
+                .process_information
+                .geography
+                .location_of_operation_supply_or_production
+                .location,
             subtype: SubType::from(&subtype.value),
             gwp,
             odp,
@@ -257,13 +447,16 @@ impl<'de> Deserialize<'de> for EPD {
 }
 
 fn get_ilcd_standard(helper: &ILCD) -> Standard {
-    for compliance in &helper.modelling_and_validation.compliance_declarations.compliance {
+    for compliance in &helper
+        .modelling_and_validation
+        .compliance_declarations
+        .compliance
+    {
         for description in &compliance.reference_to_compliance_system.short_description {
             match Standard::from(&description.value) {
                 Standard::UNKNOWN => continue,
-                standard => return standard
+                standard => return standard,
             }
-
         }
     }
 
@@ -271,7 +464,12 @@ fn get_ilcd_standard(helper: &ILCD) -> Standard {
 }
 
 fn get_converted_unit(unit_value: &String) -> Unit {
-    let value = unit_value.split("/").collect::<Vec<&str>>().first().unwrap().to_string();
+    let value = unit_value
+        .split("/")
+        .collect::<Vec<&str>>()
+        .first()
+        .unwrap()
+        .to_string();
     Unit::from(&value)
 }
 
@@ -282,10 +480,14 @@ fn get_ilcd_conversion(exchange: &Exchange) -> Vec<Conversion> {
         Some(material_properties) => {
             for material_property in material_properties {
                 let value = material_property.value.parse().unwrap_or_else(|_| 1.0);
-                conversions.push(Conversion { value, to: get_converted_unit(&material_property.unit), meta_data: serde_json::to_string(material_property).unwrap() })
+                conversions.push(Conversion {
+                    value,
+                    to: get_converted_unit(&material_property.unit),
+                    meta_data: serde_json::to_string(material_property).unwrap(),
+                })
             }
         }
-        _ => return conversions
+        _ => return conversions,
     }
 
     conversions
@@ -293,16 +495,31 @@ fn get_ilcd_conversion(exchange: &Exchange) -> Vec<Conversion> {
 
 fn get_ilcd_declared_unit(exchange: &Exchange) -> Unit {
     for flow_property in exchange.flow_properties.as_ref().unwrap() {
-        match (flow_property.reference_flow_property, &flow_property.reference_unit) {
-            (Some(reference_flow), Some(reference_unit)) if reference_flow == true => return Unit::from(reference_unit),
-            _ => continue
+        match (
+            flow_property.reference_flow_property,
+            &flow_property.reference_unit,
+        ) {
+            (Some(reference_flow), Some(reference_unit)) if reference_flow == true => {
+                return Unit::from(reference_unit)
+            }
+            _ => continue,
         }
     }
 
     Unit::UNKNOWN
 }
 
-fn collect_from_lcia_result(lcia_result: &Vec<LCIAResult>) -> (Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>) {
+fn collect_from_lcia_result(
+    lcia_result: &Vec<LCIAResult>,
+) -> (
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+) {
     let mut gwp = None;
     let mut odp = None;
     let mut ap = None;
@@ -312,17 +529,22 @@ fn collect_from_lcia_result(lcia_result: &Vec<LCIAResult>) -> (Option<ImpactCate
     let mut adpf = None;
 
     for lcia_result in lcia_result {
-        for description in &lcia_result.reference_to_lcia_method_dataset.short_description {
+        for description in &lcia_result
+            .reference_to_lcia_method_dataset
+            .short_description
+        {
             let impact_value = Some(ImpactCategory::from(&lcia_result.other.anies));
             match &description.value {
-                value if value.contains("(GWP)") || value.contains("(GWP-total)")  => gwp = impact_value,
+                value if value.contains("(GWP)") || value.contains("(GWP-total)") => {
+                    gwp = impact_value
+                }
                 value if value.contains("(ODP)") => odp = impact_value,
                 value if value.contains("(AP)") => ap = impact_value,
                 value if value.contains("(EP)") => ep = impact_value,
                 value if value.contains("(POCP)") => pocp = impact_value,
                 value if value.contains("(ADPE)") => adpe = impact_value,
                 value if value.contains("(ADPF)") => adpf = impact_value,
-                _ => continue
+                _ => continue,
             }
         }
     }
@@ -330,7 +552,30 @@ fn collect_from_lcia_result(lcia_result: &Vec<LCIAResult>) -> (Option<ImpactCate
     (gwp, odp, ap, ep, pocp, adpe, adpf)
 }
 
-fn collect_from_exchanges(exchanges: &Vec<Exchange>) -> (Unit, Vec<Conversion>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>, Option<ImpactCategory>) {
+fn collect_from_exchanges(
+    exchanges: &Vec<Exchange>,
+) -> (
+    Unit,
+    Vec<Conversion>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+    Option<ImpactCategory>,
+) {
     let mut declared_unit = Unit::UNKNOWN;
     let mut conversions: Vec<Conversion> = vec![];
     let mut pere = None;
@@ -362,7 +607,7 @@ fn collect_from_exchanges(exchanges: &Vec<Exchange>) -> (Unit, Vec<Conversion>, 
                 for description in &exchange.reference_to_flow_data_set.short_description {
                     let impact_value = match &exchange.other {
                         Some(_anies) => Some(ImpactCategory::from(&_anies.anies)),
-                        _ => continue
+                        _ => continue,
                     };
                     match &description.value {
                         _description if _description == "Use of renewable primary energy (PERE)" => pere = impact_value,
@@ -390,5 +635,26 @@ fn collect_from_exchanges(exchanges: &Vec<Exchange>) -> (Unit, Vec<Conversion>, 
         };
     }
 
-    (declared_unit, conversions, pere, perm, pert, penre, penrm, penrt, sm, rsf, nrsf, fw, hwd, nhwd, rwd, cru, mfr, mer, eee, eet)
+    (
+        declared_unit,
+        conversions,
+        pere,
+        perm,
+        pert,
+        penre,
+        penrm,
+        penrt,
+        sm,
+        rsf,
+        nrsf,
+        fw,
+        hwd,
+        nhwd,
+        rwd,
+        cru,
+        mfr,
+        mer,
+        eee,
+        eet,
+    )
 }

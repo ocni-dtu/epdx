@@ -9,9 +9,9 @@ epd_dict = epdx.convert_ilcd(ilcd_file.read_text())
 print(json.dumps(epd_dict, indent=2))
 
 print("\nEPD as Pydantic model")
-epd_pydantic = epdx.convert_ilcd(ilcd_file.read_text(), as_type="pydantic")
+epd_pydantic = epdx.convert_ilcd(ilcd_file.read_text(), as_type=epdx.EPD)
 print(epd_pydantic)
 
 print("\nEPD as string")
-epd_str = epdx.convert_ilcd(ilcd_file.read_text(), as_type="str")
+epd_str = epdx.convert_ilcd(ilcd_file.read_text(), as_type=str)
 print(epd_str)

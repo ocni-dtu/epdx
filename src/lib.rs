@@ -1,8 +1,9 @@
+pub mod epd;
 #[allow(dead_code)]
 pub mod ilcd;
-mod utils;
+pub mod lcabyg;
 pub mod parse;
-pub mod epd;
+mod utils;
 
 #[cfg(feature = "jsbindings")]
 mod javascript;
@@ -15,6 +16,6 @@ pub fn convert_ilcd(json: String) -> String {
     let epd = parse::parse_ilcd(json);
     match epd {
         Ok(epd) => serde_json::to_string(&epd).unwrap(),
-        Err(_) => String::from("")
+        Err(_) => String::from(""),
     }
 }

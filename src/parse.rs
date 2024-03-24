@@ -1,5 +1,5 @@
-use serde_json::Error;
 use crate::epd::EPD;
+use serde_json::Error;
 
 /// Parse a ILCD formatted EPD in an EPDx struct
 ///
@@ -12,6 +12,6 @@ pub fn parse_ilcd(json: String) -> Result<EPD, Error> {
     let epd = serde_json::from_str(&json);
     match epd {
         Ok(epd) => Ok(epd),
-        Err(err) => Err(err)
+        Err(err) => Err(err),
     }
 }

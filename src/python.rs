@@ -1,6 +1,6 @@
-use pyo3::prelude::*;
-use pyo3::exceptions::PyTypeError;
 use crate::parse;
+use pyo3::exceptions::PyTypeError;
+use pyo3::prelude::*;
 
 #[cfg(feature = "pybindings")]
 #[pyfunction]
@@ -8,7 +8,7 @@ pub fn _convert_ilcd(json: String) -> PyResult<String> {
     let epd = parse::parse_ilcd(json);
     match epd {
         Ok(epd) => Ok(serde_json::to_string(&epd).unwrap()),
-        Err(error) => Err(PyTypeError::new_err(error.to_string()))
+        Err(error) => Err(PyTypeError::new_err(error.to_string())),
     }
 }
 
