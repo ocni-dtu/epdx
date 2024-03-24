@@ -33,7 +33,7 @@ def convert_ilcd(data: str | dict, *, as_type: Type[T] = dict) -> T:
     elif as_type == EPD:
         return EPD(**json.loads(_epd))
     else:
-        raise NotImplemented("Currently only 'dict', 'str' and 'pydantic' is implemented as_type.")
+        raise NotImplementedError("Currently only 'dict', 'str' and 'epdx.EPD' is implemented as_type.")
 
 
 class ParsingException(Exception):
