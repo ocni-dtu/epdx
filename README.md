@@ -75,7 +75,7 @@ cargo test --package epdx --target x86_64-unknown-linux-gnu
 
 ```bash
 maturin develop --extras tests --target x86_64-unknown-linux-gnu
-source .venv/bin/active .
+source .venv/bin/activate .
 cd packages/python
 pytest tests/
 ```
@@ -83,7 +83,7 @@ pytest tests/
 ## Build Documentation
 
 ```bash
-maturin develop --extras doc,code-gen --target x86_64-unknown-linux-gnu
+maturin develop --extras doc,codegen --target x86_64-unknown-linux-gnu
 mkdocs develop
 ```
 
