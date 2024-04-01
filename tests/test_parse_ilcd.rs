@@ -52,6 +52,8 @@ mod tests {
         ilcd_0e9fd868: "0e9fd868-9656-489e-be6c-8251b3d43283.json"
         ilcd_023f3b97: "023f3b97-976a-41c4-b0f1-5357b9dc5b3e.json"
         ilcd_c23b2987: "c23b2987-776d-4d55-91c7-5f2a0f2c50f1.json"
+        ilcd_0aa8b645: "0aa8b645-02d9-41b4-8aa3-70335af2a9e7.json"
+        ilcd_335241f9: "335241f9-db84-486c-9a19-cd5ebb791903.json"
     }
 
     #[test]

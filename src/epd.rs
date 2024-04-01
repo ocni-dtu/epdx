@@ -5,16 +5,16 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
 
-use crate::ilcd::{Exchange, LCIAResult, ModuleAnie, ILCD};
+use crate::ilcd::{Exchange, LCIAResult, ModuleAnie, ILCD, DataSetName};
 
 #[cfg(feature = "jsbindings")]
 use tsify::Tsify;
 
 #[derive(Serialize, JsonSchema, Clone)]
 #[cfg_attr(
-    feature = "jsbindings",
-    derive(Tsify),
-    tsify(into_wasm_abi, from_wasm_abi)
+feature = "jsbindings",
+derive(Tsify),
+tsify(into_wasm_abi, from_wasm_abi)
 )]
 pub struct EPD {
     pub id: String,
@@ -325,8 +325,8 @@ pub struct Conversion {
 
 impl<'de> Deserialize<'de> for EPD {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
+        where
+            D: Deserializer<'de>,
     {
         let helper = ILCD::deserialize(deserializer)?;
         let subtype = helper
@@ -373,15 +373,7 @@ impl<'de> Deserialize<'de> for EPD {
 
         Ok(EPD {
             id: helper.process_information.data_set_information.uuid,
-            name: helper
-                .process_information
-                .data_set_information
-                .name
-                .base_name
-                .first()
-                .unwrap()
-                .value
-                .to_string(),
+            name: get_name(helper.process_information.data_set_information.name),
             version: helper.version,
             format_version,
             declared_unit,
@@ -453,7 +445,7 @@ fn get_ilcd_standard(helper: &ILCD) -> Standard {
         .compliance
     {
         for description in &compliance.reference_to_compliance_system.short_description {
-            match Standard::from(&description.value) {
+            match Standard::from(&description.value.clone().unwrap()) {
                 Standard::UNKNOWN => continue,
                 standard => return standard,
             }
@@ -500,7 +492,7 @@ fn get_ilcd_declared_unit(exchange: &Exchange) -> Unit {
             &flow_property.reference_unit,
         ) {
             (Some(reference_flow), Some(reference_unit)) if reference_flow == true => {
-                return Unit::from(reference_unit)
+                return Unit::from(reference_unit);
             }
             _ => continue,
         }
@@ -535,15 +527,15 @@ fn collect_from_lcia_result(
         {
             let impact_value = Some(ImpactCategory::from(&lcia_result.other.anies));
             match &description.value {
-                value if value.contains("(GWP)") || value.contains("(GWP-total)") => {
+                Some(value) if value.contains("(GWP)") || value.contains("(GWP-total)") => {
                     gwp = impact_value
                 }
-                value if value.contains("(ODP)") => odp = impact_value,
-                value if value.contains("(AP)") => ap = impact_value,
-                value if value.contains("(EP)") => ep = impact_value,
-                value if value.contains("(POCP)") => pocp = impact_value,
-                value if value.contains("(ADPE)") => adpe = impact_value,
-                value if value.contains("(ADPF)") => adpf = impact_value,
+                Some(value) if value.contains("(ODP)") => odp = impact_value,
+                Some(value) if value.contains("(AP)") => ap = impact_value,
+                Some(value) if value.contains("(EP)") => ep = impact_value,
+                Some(value) if value.contains("(POCP)") => pocp = impact_value,
+                Some(value) if value.contains("(ADPE)") => adpe = impact_value,
+                Some(value) if value.contains("(ADPF)") => adpf = impact_value,
                 _ => continue,
             }
         }
@@ -610,24 +602,24 @@ fn collect_from_exchanges(
                         _ => continue,
                     };
                     match &description.value {
-                        _description if _description == "Use of renewable primary energy (PERE)" => pere = impact_value,
-                        _description if _description == "Use of renewable primary energy resources used as raw materials (PERM)" => perm = impact_value,
-                        _description if _description == "Total use of renewable primary energy resources (PERT)" => pert = impact_value,
-                        _description if _description == "Use of non renewable primary energy (PENRE)" => penre = impact_value,
-                        _description if _description == "Use of non renewable primary energy resources used as raw materials (PENRM)" => penrm = impact_value,
-                        _description if _description == "Total use of non renewable primary energy resource (PENRT)" => penrt = impact_value,
-                        _description if _description == "Use of secondary material (SM)" => sm = impact_value,
-                        _description if _description == "Use of renewable secondary fuels (RSF)" => rsf = impact_value,
-                        _description if _description == "Use of non renewable secondary fuels (NRSF)" => nrsf = impact_value,
-                        _description if _description == "Use of net fresh water (FW)" => fw = impact_value,
-                        _description if _description == "Hazardous waste disposed (HWD)" => hwd = impact_value,
-                        _description if _description == "Non hazardous waste dispose (NHWD)" => nhwd = impact_value,
-                        _description if _description == "Radioactive waste disposed (RWD)" => rwd = impact_value,
-                        _description if _description == "Components for re-use (CRU)" => cru = impact_value,
-                        _description if _description == "Materials for recycling (MFR)" => mfr = impact_value,
-                        _description if _description == "Materials for energy recovery (MER)" => mer = impact_value,
-                        _description if _description == "Exported electrical energy (EEE)" => eee = impact_value,
-                        _description if _description == "Exported thermal energy (EET)" => eet = impact_value,
+                        Some(_description) if _description == "Use of renewable primary energy (PERE)" => pere = impact_value,
+                        Some(_description) if _description == "Use of renewable primary energy resources used as raw materials (PERM)" => perm = impact_value,
+                        Some(_description) if _description == "Total use of renewable primary energy resources (PERT)" => pert = impact_value,
+                        Some(_description) if _description == "Use of non renewable primary energy (PENRE)" => penre = impact_value,
+                        Some(_description) if _description == "Use of non renewable primary energy resources used as raw materials (PENRM)" => penrm = impact_value,
+                        Some(_description) if _description == "Total use of non renewable primary energy resource (PENRT)" => penrt = impact_value,
+                        Some(_description) if _description == "Use of secondary material (SM)" => sm = impact_value,
+                        Some(_description) if _description == "Use of renewable secondary fuels (RSF)" => rsf = impact_value,
+                        Some(_description) if _description == "Use of non renewable secondary fuels (NRSF)" => nrsf = impact_value,
+                        Some(_description) if _description == "Use of net fresh water (FW)" => fw = impact_value,
+                        Some(_description) if _description == "Hazardous waste disposed (HWD)" => hwd = impact_value,
+                        Some(_description) if _description == "Non hazardous waste dispose (NHWD)" => nhwd = impact_value,
+                        Some(_description) if _description == "Radioactive waste disposed (RWD)" => rwd = impact_value,
+                        Some(_description) if _description == "Components for re-use (CRU)" => cru = impact_value,
+                        Some(_description) if _description == "Materials for recycling (MFR)" => mfr = impact_value,
+                        Some(_description) if _description == "Materials for energy recovery (MER)" => mer = impact_value,
+                        Some(_description) if _description == "Exported electrical energy (EEE)" => eee = impact_value,
+                        Some(_description) if _description == "Exported thermal energy (EET)" => eet = impact_value,
                         _ => continue
                     }
                 }
@@ -657,4 +649,11 @@ fn collect_from_exchanges(
         eee,
         eet,
     )
+}
+
+fn get_name(base_name: DataSetName) -> String {
+    match base_name.base_name.first() {
+        Some(name) if name.value.is_some() => name.value.clone().unwrap(),
+        _ => "".to_string()
+    }
 }

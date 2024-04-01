@@ -143,7 +143,6 @@ impl From<&AnieValue> for f64 {
 pub struct ValueObject {
     _type: String,
     ref_object_id: String,
-    uri: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -225,6 +224,6 @@ pub struct DataSetName {
 
 #[derive(Deserialize, Debug)]
 pub struct ValueLang {
-    pub value: String,
+    pub value: Option<String>,
     pub lang: String,
 }
