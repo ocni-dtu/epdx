@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/ocni-dtu/epdx/compare/v1.2.1...v1.2.2) (2024-04-01)
+
+
+### Bug Fixes
+
+* fixed ilcd parse issue and added more test cases ([25b2f09](https://github.com/ocni-dtu/epdx/commit/25b2f09e37906d2a6ba4310f090f943645eaa690))
+
 ## [1.2.1](https://github.com/ocni-dtu/epdx/compare/v1.2.0...v1.2.1) (2024-04-01)
 
 
