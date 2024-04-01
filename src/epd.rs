@@ -180,16 +180,13 @@ pub enum SubType {
     Representative,
 }
 
-impl From<&String> for SubType {
-    fn from(value: &String) -> Self {
-        if value.to_ascii_lowercase().contains("representative") {
-            SubType::Representative
-        } else if value.to_ascii_lowercase().contains("specific") {
-            SubType::Specific
-        } else if value.to_ascii_lowercase().contains("industry") {
-            SubType::Industry
-        } else {
-            SubType::Generic
+impl From<&Option<String>> for SubType {
+    fn from(value: &Option<String>) -> Self {
+        match value {
+            Some(_value) if _value.to_lowercase().contains("representative") => SubType::Representative,
+            Some(_value) if _value.to_lowercase().contains("specific") => SubType::Specific,
+            Some(_value) if _value.to_lowercase().contains("industry") => SubType::Industry,
+            _ => SubType::Generic,
         }
     }
 }

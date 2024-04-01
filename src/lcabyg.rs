@@ -103,7 +103,7 @@ impl From<&Vec<Stage>> for EPD {
                 name: node.external_source.clone(),
                 url: Some(node.external_url.clone()),
             }),
-            subtype: SubType::from(&node.data_type),
+            subtype: SubType::from(&Some(node.data_type.clone())),
             standard: if node.compliance == "A1" {
                 Standard::EN15804A1
             } else {

@@ -178,7 +178,7 @@ pub struct Anies {
 #[serde(rename_all = "camelCase")]
 pub struct Anie {
     pub name: String,
-    pub value: String,
+    pub value: Option<String>,
 }
 
 #[derive(Deserialize)]
