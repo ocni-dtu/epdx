@@ -1,3 +1,16 @@
+# EPDx is Deprecated
+
+Since the first release of EPDx and LCAx a lot of changes have gone into the  projects.
+
+Some of that development have required that the functionality in LCAx and EPDx should have a tighter coupling.
+I have therefore decided that LCAx should adopt the functionality of EPDx.
+
+In practical terms it means that everything from EPDx is now inside LCAx.
+
+No new development will be carried out for EPDx, but the packages and GitHub repository are still available for everyone, however they are now considered legacy and the GitHub repository will be archived.
+
+However, development on [LCAx](https://github.com/ocni-dtu/lcax) is very active!
+
 # EPDx
 
 EPDx is a library for parsing EPD files into a common exchange format.
